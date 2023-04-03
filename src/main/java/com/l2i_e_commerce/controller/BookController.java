@@ -48,6 +48,16 @@ public class BookController {
         bookService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+    
+    @GetMapping("/search/title")
+    public ResponseEntity<List<Book>> searchBooksByTitle(@RequestParam String title) {
+        return ResponseEntity.ok(bookService.searchBooksByTitle(title));
+    }
+
+    @GetMapping("/search/author")
+    public ResponseEntity<List<Book>> searchBooksByAuthorName(@RequestParam String authorName) {
+        return ResponseEntity.ok(bookService.searchBooksByAuthorName(authorName));
+    }
 
 }
 
