@@ -5,6 +5,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,33 +15,40 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 
-@AllArgsConstructor
 @Data
 @Entity
-@RequiredArgsConstructor
+@AllArgsConstructor
 @NoArgsConstructor
 public class User {
-	
-	@Id
+
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	Long id;
-	@NonNull
-	String role;
-	@NonNull
-	String firstname;
-	@NonNull
-	String lastname;
-	@NonNull	
-	String email;
-	@NonNull
-	String password;
-	@NonNull
+    Long id;
+
+    String role;
+
+    String firstname;
+
+    String lastname;
+
+    @Column(unique = true)
+    String email;
+
+    String password;
+
     @JsonIgnoreProperties("users")
     @ManyToMany(cascade = { CascadeType.MERGE, CascadeType.REFRESH })
-	List<Address> addresses;
-	
-	
+    List<Address> addresses;
 
+    public User(@NonNull String role, @NonNull String firstname, @NonNull String lastname,
+                @NonNull String email, @NonNull String password, @NonNull List<Address> addresses) {
+        this.role = role;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.email = email;
+        this.password = password;
+        this.addresses = addresses;
+    }
 }
+
