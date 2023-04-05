@@ -8,18 +8,22 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.math.BigDecimal;
-import java.net.URI;
+import java.net.*;
 import java.net.http.*;
 import java.util.*;
+
 import java.util.stream.Collectors;
 
 @Component
+@EnableAsync
 public class DatabaseSeeder {
 
     private final ItemService itemService;
@@ -62,17 +66,25 @@ public class DatabaseSeeder {
     	seedDatabase();
     }
     
-    private void seedDatabase() {
+    @PostConstruct
+    public void seedDatabase() {
+        for (int i = 1; i <= 8; i++) {
+            fetchData(i);
+        }
+    }
+
+    @Async
+    public void fetchData(int pageNumber) {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://api.itbook.store/1.0/search/mongodb"))
+                .uri(URI.create("https://api.itbook.store/1.0/search/mongodb/" + pageNumber))
                 .build();
 
         client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(HttpResponse::body)
-                .thenApply(this::parse)
-                .join();
+                .thenApply(this::parse);
     }
+
 
     public String parse(String responseBody) {
         try {
