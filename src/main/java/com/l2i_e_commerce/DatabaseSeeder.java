@@ -2,10 +2,11 @@ package com.l2i_e_commerce;
 
 import com.l2i_e_commerce.model.*;
 import com.l2i_e_commerce.service.*;
+
+import jakarta.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import org.json.JSONArray;
@@ -33,9 +34,9 @@ public class DatabaseSeeder {
 
     }
 
-    @EventListener
+    @PostConstruct
     @Profile("dev")
-    public void seedDatabaseForDevelopment(ContextRefreshedEvent event) {
+    public void seedDatabaseForDevelopment() {
         // données pour l'environnement de développement
     	/*
     	 * public void seedDatabasePerso() { //test pour un livre déjà existant avec une
@@ -55,9 +56,9 @@ public class DatabaseSeeder {
         seedDatabase();
     }
 
-    @EventListener
+    @PostConstruct
     @Profile("prod")
-    public void seedDatabaseForProduction(ContextRefreshedEvent event) {
+    public void seedDatabaseForProduction() {
     	seedDatabase();
     }
     

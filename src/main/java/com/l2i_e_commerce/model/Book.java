@@ -16,13 +16,15 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
+    private String isbn13;
+
     private String title;
 
     private String subtitle;
 
     @Column(columnDefinition = "LONGTEXT")
     private String summary;
-
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -39,9 +41,6 @@ public class Book {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
-
-    @Column(unique = true)
-    private String isbn13;
 
     private String pages;
 
