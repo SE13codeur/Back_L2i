@@ -20,4 +20,8 @@ public class Editor {
 
     @OneToMany(mappedBy = "editor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Book> books;
+    
+    public Editor(String name) {
+        this.name = name;
+    }
 }

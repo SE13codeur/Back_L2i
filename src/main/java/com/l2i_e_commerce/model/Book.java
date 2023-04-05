@@ -1,6 +1,5 @@
 package com.l2i_e_commerce.model;
 
-import java.util.Date;
 import java.util.Set;
 
 import jakarta.persistence.*;
@@ -10,6 +9,7 @@ import lombok.*;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Book {
 
     @Id
@@ -17,6 +17,12 @@ public class Book {
     private Long id;
 
     private String title;
+
+    private String subtitle;
+
+    @Column(columnDefinition = "LONGTEXT")
+    private String summary;
+
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -40,9 +46,12 @@ public class Book {
     private String pages;
 
     private String year;
+    
+    private Integer version;
+    
+    private String detailsBookUrl;
 
-    @Column(columnDefinition = "DATE")
-    private Date version;
+
 }
 
 

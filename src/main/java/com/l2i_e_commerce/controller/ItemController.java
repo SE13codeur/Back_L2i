@@ -57,11 +57,6 @@ public class ItemController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
     
-    @GetMapping("/search")
-    public ResponseEntity<List<Item>> searchByTitleOrAuthor(@RequestParam String query) {
-        return ResponseEntity.ok(itemService.searchByTitleOrAuthor(query));
-    }
-    
     @GetMapping("/in-stock")
     public ResponseEntity<List<Item>> findItemsInStock() {
         return ResponseEntity.ok(itemService.findItemsInStock());

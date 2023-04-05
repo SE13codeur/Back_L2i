@@ -16,8 +16,6 @@ public interface ItemService {
     
     void deleteById(Long id);List<Item> findItemsInStock();
         
-    List<Item> searchByTitleOrAuthor(String query);
-
     List<Item> findMostSoldItems();
 }
 

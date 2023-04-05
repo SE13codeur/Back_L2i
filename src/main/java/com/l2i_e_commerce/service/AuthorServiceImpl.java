@@ -17,7 +17,8 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
-    public List<Author> searchAuthorsByName(String name) {
-        return authorRepository.findByNameContainingIgnoreCase(name);
+    public List<Author> searchAuthorsByName(String firstName, String lastName) {
+        return authorRepository.findByFirstNameAndLastName(firstName, lastName);
     }
+
 }

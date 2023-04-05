@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @Configuration
-@ConfigurationProperties(prefix = "com.l2i_e_commerce")
+@ConfigurationProperties(prefix = "com.l2i-e-commerce")
 public class CustomProperties {
 
 	private String apiUrl;

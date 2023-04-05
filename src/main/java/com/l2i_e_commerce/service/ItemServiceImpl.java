@@ -44,11 +44,6 @@ public class ItemServiceImpl implements ItemService {
     }
     
     @Override
-    public List<Item> searchByTitleOrAuthor(String query) {
-        return itemRepository.searchByTitleOrAuthor(query);
-    }
-    
-    @Override
     public List<Item> findItemsInStock() {
         return itemRepository.findItemsInStock();
     }
