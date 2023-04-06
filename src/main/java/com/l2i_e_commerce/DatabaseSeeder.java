@@ -73,6 +73,17 @@ public class DatabaseSeeder {
     
     @PostConstruct
     public void seedDatabase() {
+    	// Créer et enregistrer un objet Category
+    	Category category = new Category();
+    	category.setName("Livres");
+    	try {
+            categoryService.save(category);
+		} catch (DataIntegrityViolationException e) {
+            System.err.println("Catégorie déjà présente en base avec ce nom : " + category.getName());
+
+		}
+    	
+        
         for (int i = 1; i <= 8; i++) {
             fetchData(i);
         }
@@ -153,11 +164,6 @@ public class DatabaseSeeder {
                         return author;
                     })
                     .collect(Collectors.toSet());
-
-            // Créer et enregistrer un objet Category
-            Category category = new Category();
-            category.setName("Livres");
-            categoryService.save(category);
             
             // Créer un objet Editor à partir du nom de l'éditeur
             Editor editor = new Editor();
