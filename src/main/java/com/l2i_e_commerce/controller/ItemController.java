@@ -1,13 +1,11 @@
 package com.l2i_e_commerce.controller;
 
-import com.l2i_e_commerce.model.Item;
-import com.l2i_e_commerce.service.ItemService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import com.l2i_e_commerce.model.*;
+import com.l2i_e_commerce.service.*;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/items")
@@ -17,21 +15,6 @@ public class ItemController {
 
     public ItemController(ItemService itemService) {
         this.itemService = itemService;
-    }
-
-    @GetMapping
-    public ResponseEntity<List<Item>> findAll() {
-        return ResponseEntity.ok(itemService.findAll());
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Item> findById(@PathVariable Long id) {
-        Optional<Item> item = itemService.findById(id);
-        if (item.isPresent()) {
-            return ResponseEntity.ok(item.get());
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
     }
 
     @PostMapping

@@ -9,26 +9,31 @@ import org.springframework.web.bind.annotation.*;
 
 import com.l2i_e_commerce.model.Book;
 import com.l2i_e_commerce.service.BookService;
+import com.l2i_e_commerce.service.MeiliSearchServiceImpl;
 
 @RestController
 @RequestMapping("/api/books")
 public class BookController {
+	
+	private MeiliSearchServiceImpl meiliSearchService;
+
+	@Autowired
+	public BookController(MeiliSearchServiceImpl meiliSearchService) {
+	    this.meiliSearchService = meiliSearchService;
+	}
 
     @Autowired
     private BookService bookService;
-
-    @GetMapping
-    public ResponseEntity<List<Book>> getAllBooks() {
-        return ResponseEntity.ok(bookService.findAll());
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Book> getBookById(@PathVariable Long id) {
-        Book book = bookService.findById(id);
-        if (book != null) {
-            return ResponseEntity.ok(book);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    
+    // Search via Meilisearch
+    @GetMapping("/search")
+    public ResponseEntity<List<Book>> searchBooks(@RequestParam String query, @RequestParam(required = false) String filter) {
+        try {
+            List<Book> books = meiliSearchService.searchBooks(query, filter);
+            return ResponseEntity.ok(books);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 
@@ -48,16 +53,6 @@ public class BookController {
         bookService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
-    
-    @GetMapping("/search/title")
-    public ResponseEntity<List<Book>> searchBooksByTitle(@RequestParam String title) {
-        return ResponseEntity.ok(bookService.searchBooksByTitle(title));
-    }
-
-    @GetMapping("/search/author")
-    public ResponseEntity<List<Book>> searchBooksByAuthorName(@RequestParam String firstName, @RequestParam String lastName) {
-        return ResponseEntity.ok(bookService.searchBooksByAuthorName(firstName, lastName));
-    }
-
 }
+
 

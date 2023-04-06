@@ -46,10 +46,7 @@ public class Book {
 
     private String year;
     
-    private Integer version;
-    
-    private String detailsBookUrl;
-
+    private int version;
 
 }
 

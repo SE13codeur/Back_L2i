@@ -18,16 +18,6 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
-    @GetMapping("/{id}")
-    public Category getCategory(@PathVariable Long id) {
-        return categoryService.findById(id);
-    }
-
-    @GetMapping
-    public List<Category> getCategories() {
-        return categoryService.findAll();
-    }
-
     @PostMapping
     public Category createCategory(@RequestBody Category category) {
         return categoryService.save(category);

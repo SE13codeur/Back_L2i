@@ -19,6 +19,8 @@ import java.math.BigDecimal;
 import java.net.*;
 import java.net.http.*;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
+
 
 import java.util.stream.Collectors;
 
@@ -28,6 +30,7 @@ public class DatabaseSeeder {
 
     private final ItemService itemService;
     private final BookService bookService;
+    private final CategoryService categoryService;
 
 
     @Autowired
@@ -35,6 +38,8 @@ public class DatabaseSeeder {
                           EditorService editorService, CategoryService categoryService) {
         this.itemService = itemService;
         this.bookService = bookService;
+        this.categoryService = categoryService;
+
 
     }
 
@@ -149,8 +154,12 @@ public class DatabaseSeeder {
                     })
                     .collect(Collectors.toSet());
 
+            // Créer et enregistrer un objet Category
+            Category category = new Category();
+            category.setName("Livres");
+            categoryService.save(category);
             
-         // Créer un objet Editor à partir du nom de l'éditeur
+            // Créer un objet Editor à partir du nom de l'éditeur
             Editor editor = new Editor();
             editor.setName(publisher);
             
@@ -164,12 +173,13 @@ public class DatabaseSeeder {
             book.setPages(pages);
             book.setYear(year);
             book.setSummary(description);
+            book.setVersion(ThreadLocalRandom.current().nextInt(1, 5));
+            book.setCategory(this.categoryService.findById(1l));
             try {
             	bookService.save(book);
             } catch (DataIntegrityViolationException e) {
                 System.err.println("Livre déjà présent en base avec cet isbn13 : " + isbn13);
             }
-
 
             // Créer et enregistrer un objet Item
             Item item = new Item();
@@ -180,7 +190,6 @@ public class DatabaseSeeder {
             item.setDescription(description);
             // Autres attributs si nécessaire
             itemService.save(item);
-
 
         } catch (JSONException e) {
             System.err.println("Error parsing JSON in parseBookDetails method: " + responseBody);
