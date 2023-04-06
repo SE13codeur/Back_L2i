@@ -2,14 +2,10 @@ package com.l2i_e_commerce.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.l2i_e_commerce.model.Book;
-import com.meilisearch.sdk.Client;
-import com.meilisearch.sdk.Config;
-import com.meilisearch.sdk.Index;
+import com.meilisearch.sdk.*;
 import org.springframework.stereotype.Service;
 
-
-import com.meilisearch.sdk.json.GsonJsonHandler;
-import com.meilisearch.sdk.json.JsonHandler;
+import com.meilisearch.sdk.json.*;
 import com.meilisearch.sdk.model.*;
 
 import java.util.*;
@@ -22,11 +18,17 @@ public class MeiliSearchServiceImpl implements MeiliSearchService {
     private final ObjectMapper objectMapper;
 
     public MeiliSearchServiceImpl() throws Exception {
-    	
-        Config config = new Config("http://127.0.0.1:7700");
+    	Config config = new Config("http://127.0.0.1:7700");
         client = new Client(config);
         bookIndex = client.index("books");
         objectMapper = new ObjectMapper();
+
+        // Configuration des paramètres d'index
+        Settings settings = new Settings();
+        settings.setSearchableAttributes(new String[]{"title", "author", "summary", "price", "rating"});
+        settings.setDisplayedAttributes(new String[]{"title", "author", "summary", "price", "rating"});
+
+        bookIndex.updateSettings(settings);
     }
 
     @Override
@@ -51,4 +53,6 @@ public class MeiliSearchServiceImpl implements MeiliSearchService {
         Book[] books = jsonHandler.decode(searchResponse, Book[].class);
         return Arrays.asList(books);
     }
+
 }
+

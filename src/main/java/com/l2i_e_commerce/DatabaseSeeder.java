@@ -170,17 +170,19 @@ public class DatabaseSeeder {
             editor.setName(publisher);
             
             // Créer et enregistrer un objet Book
-            Book book = new Book();
-            book.setTitle(title);
-            book.setSubtitle(subtitle);
-            book.setAuthors(authorsSplitString);
-            book.setEditor(editor);
-            book.setIsbn13(isbn13);
-            book.setPages(pages);
-            book.setYear(year);
-            book.setSummary(description);
-            book.setVersion(ThreadLocalRandom.current().nextInt(1, 5));
-            book.setCategory(this.categoryService.findById(1l));
+            Book book = Book.builder()
+                    .title(title)
+                    .subtitle(subtitle)
+                    .authors(authorsSplitString)
+                    .editor(editor)
+                    .isbn13(isbn13)
+                    .pages(pages)
+                    .year(year)
+                    .summary(description)
+                    .version(ThreadLocalRandom.current().nextInt(1, 5))
+                    .category(this.categoryService.findById(1l))
+                    .build();
+
             try {
             	bookService.save(book);
             } catch (DataIntegrityViolationException e) {
@@ -188,7 +190,7 @@ public class DatabaseSeeder {
             }
 
             // Créer et enregistrer un objet Item
-            Item item = new Item();
+            Item item = new Book();
             item.setBook(book);
             BigDecimal price = new BigDecimal(priceString.replace("$", "").trim());
             item.setRegularPrice(price);

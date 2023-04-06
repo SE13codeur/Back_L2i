@@ -8,4 +8,3 @@ public interface MeiliSearchService {
     void deleteBookById(String id) throws Exception;
     List<Book> searchBooks(String query, String filter) throws Exception;
 }
-

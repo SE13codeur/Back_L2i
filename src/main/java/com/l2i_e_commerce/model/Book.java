@@ -10,7 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Book {
+public class Book extends Item {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,9 +19,11 @@ public class Book {
     @Column(unique = true)
     private String isbn13;
 
-    private String title;
+    @SuppressWarnings("unused")
+	private String title;
 
-    private String subtitle;
+    @SuppressWarnings("unused")
+	private String subtitle;
 
     @Column(columnDefinition = "LONGTEXT")
     private String summary;
@@ -42,11 +44,14 @@ public class Book {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    private String pages;
+    @SuppressWarnings("unused")
+	private String pages;
 
-    private String year;
+    @SuppressWarnings("unused")
+	private String year;
     
-    private int version;
+    @SuppressWarnings("unused")
+	private int version;
 
 }
 
