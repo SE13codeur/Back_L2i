@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
-
+import org.springframework.dao.DataIntegrityViolationException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -164,8 +164,12 @@ public class DatabaseSeeder {
             book.setPages(pages);
             book.setYear(year);
             book.setSummary(description);
-            // Autres attributs si nécessaire
-            bookService.save(book);
+            try {
+            	bookService.save(book);
+            } catch (DataIntegrityViolationException e) {
+                System.err.println("Livre déjà présent en base avec cet isbn13 : " + isbn13);
+            }
+
 
             // Créer et enregistrer un objet Item
             Item item = new Item();
