@@ -1,7 +1,6 @@
 package com.l2i_e_commerce.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -73,20 +72,6 @@ public class BookServiceImpl implements BookService {
     @Override()
     public void deleteById(Long id) {
         bookRepository.deleteById(id);
-    }
-
-    @Override
-    public List<Book> searchBooksByTitle(String title) {
-        return bookRepository.findByTitleContainingIgnoreCase(title);
-    }
-
-    @Override
-    public List<Book> searchBooksByAuthorName(String firstName, String lastName) {
-            List<Author> authors = authorRepository.findByFirstNameAndLastName(firstName, lastName);
-            return authors.stream()
-                    .flatMap(author -> author.getBooks().stream())
-                    .distinct()
-                    .collect(Collectors.toList());
     }
     
 }

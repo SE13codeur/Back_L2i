@@ -11,10 +11,10 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public abstract class Item {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+public abstract class Item implements MeiliSearchModel {
+	
+	@Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     
     @OneToOne(fetch = FetchType.LAZY)
@@ -42,6 +42,16 @@ public abstract class Item {
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
+    
+    @Override
+    public String getMeiliSearchId() {
+        return String.valueOf(getId());
+    }
+    
+    @Override
+    public void setMeiliSearchId(String meiliSearchId) {
+        this.id = Long.parseLong(meiliSearchId);
+    }
     
     public Item(Book book, String imageUrl, String description, BigDecimal regularPrice, boolean inStock, boolean isNewCollection, String language, int totalSales) {
         this.book = book;

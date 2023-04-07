@@ -9,9 +9,5 @@ public interface BookService {
     Book save(Book book);
     Book update(Book book);
     void deleteById(Long id);
-    
-    List<Book> searchBooksByTitle(String title);
-    
-    List<Book> searchBooksByAuthorName(String firstName, String lastName);
 }
 
