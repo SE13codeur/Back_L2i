@@ -1,58 +1,83 @@
 package com.l2i_e_commerce.service;
 
-import com.l2i_e_commerce.model.Item;
 import com.l2i_e_commerce.dao.ItemRepository;
-import com.l2i_e_commerce.service.ItemService;
+import com.l2i_e_commerce.model.Item;
+import com.meilisearch.sdk.Client;
+
+import lombok.*;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
-@SuppressWarnings("unused")
 @Service
+@AllArgsConstructor
 public class ItemServiceImpl implements ItemService {
 
-    private final ItemRepository itemRepository;
-
-    public ItemServiceImpl(ItemRepository itemRepository) {
-        this.itemRepository = itemRepository;
-    }
-
-    @Override
-    public List<Item> findAll() {
-        return itemRepository.findAll();
-    }
-
-    @Override
-    public Optional<Item> findById(Long id) {
-        return itemRepository.findById(id);
-    }
-
-    @Override
-    public Item save(Item item) {
-        return itemRepository.save(item);
-    }
-
-    @Override
-    public Item update(Item item) {
-        return itemRepository.save(item);
-    }
-
-    @Override
-    public void deleteById(Long id) {
-        itemRepository.deleteById(id);
+    private final MeiliSearchGenericService<Item> meiliSearchService;
+    
+    @SuppressWarnings("rawtypes")
+	@Autowired
+    private ItemRepository itemRepository;
+    public ItemServiceImpl() throws Exception {
+		this.meiliSearchService = null;
     }
     
-    @Override
-    public List<Item> findItemsInStock() {
-        return itemRepository.findItemsInStock();
+    public ItemServiceImpl(Client client, String indexUid) throws Exception {
+        meiliSearchService = new MeiliSearchGenericServiceImpl<Item>(client, indexUid);
     }
 
     @Override
-    public List<Item> findMostSoldItems() {
-        return itemRepository.findMostSoldItems();
+    public List<Item> findAll() throws Exception {
+        return meiliSearchService.findAll();
     }
 
-    
+    @SuppressWarnings("unchecked")
+	@Override
+    public Optional<Item> findById(String id) throws Exception {
+        Long itemId = Long.parseLong(id);
+        return itemRepository.findById(itemId);
+    }
+
+
+    @Override
+    public Item save(Item item) throws Exception {
+        return meiliSearchService.save(item);
+    }
+
+    @Override
+    public Item update(Item item) throws Exception {
+        return meiliSearchService.update(item);
+    }
+
+    @SuppressWarnings("unchecked")
+	@Override
+    public void deleteById(String id) throws Exception {
+        Long itemId = Long.parseLong(id);
+        itemRepository.deleteById(itemId);
+    }
+
+	@Override
+	public void index(List<Item> items) throws Exception {		
+	}
+
+
+	/*
+	 * @Override public List<Item> findItemsInStock() throws Exception { // Vous
+	 * devez définir les critères de recherche pour les articles en stock // Par
+	 * exemple, en utilisant un attribut "stock" dans vos objets Item String
+	 * searchQuery = "stock>0"; return meiliSearchService.search(searchQuery); }
+	 * 
+	 * @Override public List<Item> findMostSoldItems() throws Exception { // Vous
+	 * devez définir les critères de recherche pour les articles les plus vendus //
+	 * Par exemple, en utilisant un attribut "sold_count" dans vos objets Item
+	 * String searchQuery = "sort=sold_count:desc"; return
+	 * meiliSearchService.search(searchQuery); }
+	 */
 }
+
+
+
 

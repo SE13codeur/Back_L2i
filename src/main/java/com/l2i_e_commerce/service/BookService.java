@@ -1,12 +1,9 @@
 package com.l2i_e_commerce.service;
 
 import com.l2i_e_commerce.model.Book;
-import java.util.List;
 
-public interface BookService {
-    List<Book> findAll();
-    Book findById(Long id);
-    Book save(Book book);
+public interface BookService extends ItemService{
+	public Book save(Book item) throws Exception;
     Book update(Book book);
     void deleteById(Long id);
 }

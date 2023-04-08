@@ -39,9 +39,7 @@ public class DatabaseSeeder {
         this.itemService = itemService;
         this.bookService = bookService;
         this.categoryService = categoryService;
-
-
-    }
+  }
 
     @PostConstruct
     @Profile("dev")
@@ -126,11 +124,18 @@ public class DatabaseSeeder {
 
         client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(HttpResponse::body)
-                .thenApply(this::parseBookDetails)
+                .thenApply(t -> {
+					try {
+						return parseBookDetails(t);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					return t;
+				})
                 .join();
     }
 
-    public String parseBookDetails(String responseBody) {
+    public String parseBookDetails(String responseBody) throws Exception {
     	try {
             JSONObject json = new JSONObject(responseBody);
 
@@ -197,7 +202,7 @@ public class DatabaseSeeder {
             item.setImageUrl(imageUrl);
             item.setDescription(description);
             // Autres attributs si nécessaire
-            itemService.save(item);
+            itemService.save((Book)item);
 
         } catch (JSONException e) {
             System.err.println("Error parsing JSON in parseBookDetails method: " + responseBody);

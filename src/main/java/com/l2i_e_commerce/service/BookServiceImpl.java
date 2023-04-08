@@ -1,8 +1,10 @@
 package com.l2i_e_commerce.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import com.l2i_e_commerce.model.*;
@@ -12,6 +14,7 @@ import java.util.Set;
 import java.util.HashSet;
 
 @Service
+@Primary
 public class BookServiceImpl implements BookService {
 
 	@Autowired
@@ -23,15 +26,10 @@ public class BookServiceImpl implements BookService {
 	@Autowired
     private AuthorRepository authorRepository;
 
-    @Override
-    public List<Book> findAll() {
-        return bookRepository.findAll();
-    }
-
-    @Override
-    public Book findById(Long id) {
-        return bookRepository.findById(id).orElse(null);
-    }
+	@Override
+	public Item save(Item item) throws Exception {
+		return item;
+	}
 
     @Override
     public Book save(Book book) {
@@ -64,16 +62,38 @@ public class BookServiceImpl implements BookService {
         return bookRepository.save(book);
     }
 
-    @Override
-    public Book update(Book book) {
-        return bookRepository.save(book);
-    }
+	@Override
+	public List<Item> findAll() throws Exception {
+		return null;
+	}
 
-    @Override()
-    public void deleteById(Long id) {
-        bookRepository.deleteById(id);
-    }
-    
+	@Override
+	public Optional<Item> findById(String id) throws Exception {
+		return Optional.empty();
+	}
+
+	@Override
+	public Item update(Item item) throws Exception {
+		return null;
+	}
+
+	@Override
+	public void deleteById(String id) throws Exception {		
+	}
+
+	@Override
+	public Book update(Book book) {
+		return null;
+	}
+
+	@Override
+	public void deleteById(Long id) {		
+	}
+
+	@Override
+	public void index(List<Item> items) throws Exception {
+		
+	} 
 }
 
 
