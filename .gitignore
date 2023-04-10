@@ -1,10 +1,24 @@
-HELP.md
-target/
-!.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+# Compiled class file
+*.class
 
-### STS ###
+# Log file
+*.log
+
+# BlueJ files
+*.ctxt
+
+# Mobile Tools for Java (J2ME)
+*.jar
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# Maven target folder
+target/
+
+# STS #
 .apt_generated
 .classpath
 .factorypath
@@ -13,13 +27,13 @@ target/
 .springBeans
 .sts4-cache
 
-### IntelliJ IDEA ###
+# IntelliJ IDEA #
 .idea
 *.iws
 *.iml
 *.ipr
 
-### NetBeans ###
+# NetBeans #
 /nbproject/private/
 /nbbuild/
 /dist/
@@ -29,5 +43,24 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-### VS Code ###
+# VS Code #
 .vscode/
+
+# Spring Boot #
+mvnw
+mvnw.cmd
+HELP.md
+!**/src/main/**/target/
+!**/src/test/**/target/
+!**/src/main/resources/application.properties
+!**/src/main/resources/application-dev.properties
+!**/src/main/resources/application-prod.properties
+!/mvnw
+!/mvnw.cmd
+!/.mvn/wrapper/maven-wrapper.jar
+
+# Meilisearch #
+/data.ms/
+
+# Meilisearch Java client
+/.meilisearch/

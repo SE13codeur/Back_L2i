@@ -4,18 +4,22 @@ import com.l2i_e_commerce.model.*;
 import com.l2i_e_commerce.service.*;
 import com.meilisearch.sdk.*;
 
-import lombok.Data;
-
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@Data
 public class MeiliSearchConfig {
+
+    @Value("${meilisearch.url}")
+    private String meiliSearchUrl;
+
+    @Value("${meilisearch.apikey}")
+    private String meiliSearchApiKey;
 
     @Bean
     public Client meiliSearchClient() {
-        Config config = new Config("http://your-meilisearch-instance-url:7700", "your-master-key");
+        Config config = new Config(meiliSearchUrl, meiliSearchApiKey);
         return new Client(config);
     }
 
@@ -24,5 +28,8 @@ public class MeiliSearchConfig {
         return new MeiliSearchGenericServiceImpl<>(meiliSearchClient, "books");
     }
 }
+
+
+
 
 

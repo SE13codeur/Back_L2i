@@ -19,6 +19,12 @@ public class MeiliSearchGenericServiceImpl<T extends Item> implements MeiliSearc
     }
 
     @Override
+    public void index(List<Item> items) throws Exception {
+        String jsonItems = objectMapper.writeValueAsString(items);
+        meiliSearchIndex.addDocuments(jsonItems);
+    }
+
+    @Override
     public List<T> findAll() throws Exception {
         String searchResultJson = meiliSearchIndex.rawSearch("");
         JsonNode searchResultNode = objectMapper.readTree(searchResultJson);
@@ -56,11 +62,6 @@ public class MeiliSearchGenericServiceImpl<T extends Item> implements MeiliSearc
     public void deleteById(String id) throws Exception {
         meiliSearchIndex.deleteDocument(id);
     }
-
-	@Override
-	public void index(List<Item> items) throws Exception {
-		
-	}
 
 	/*
 	 * @Override public List<T> findItemsInStock() throws Exception { // Vous devez
