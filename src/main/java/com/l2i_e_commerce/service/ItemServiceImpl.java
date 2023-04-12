@@ -16,7 +16,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class ItemServiceImpl implements ItemService {
 
-    private final MeiliSearchGenericService<Item> meiliSearchService;
+    private MeiliSearchGenericService<Item> meiliSearchService;
     
     @SuppressWarnings("rawtypes")
 	@Autowired
@@ -34,8 +34,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-	public void index(List<Item> items) throws Exception {		
-	}
+    public void index(List<Item> items) throws Exception {
+        meiliSearchService.index(items);
+    }
+
     
     @Override
     public List<Item> findAll() throws Exception {

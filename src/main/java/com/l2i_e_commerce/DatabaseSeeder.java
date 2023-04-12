@@ -128,7 +128,7 @@ public class DatabaseSeeder {
 					try {
 						return parseBookDetails(t);
 					} catch (Exception e) {
-						e.printStackTrace();
+						System.err.println(e.getMessage());
 					}
 					return t;
 				})
@@ -196,7 +196,6 @@ public class DatabaseSeeder {
 
             // Créer et enregistrer un objet Item
             Item item = new Book();
-            item.setBook(book);
             BigDecimal price = new BigDecimal(priceString.replace("$", "").trim());
             item.setRegularPrice(price);
             item.setImageUrl(imageUrl);

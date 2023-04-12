@@ -16,10 +16,6 @@ public abstract class Item implements MeiliSearchModel {
 	@Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "book_id")
-    private Book book;
 
     private String imageUrl;
     
@@ -53,8 +49,7 @@ public abstract class Item implements MeiliSearchModel {
         this.id = Long.parseLong(meiliSearchId);
     }
     
-    public Item(Book book, String imageUrl, String description, BigDecimal regularPrice, boolean inStock, boolean isNewCollection, String language, int totalSales) {
-        this.book = book;
+    public Item(String imageUrl, String description, BigDecimal regularPrice, boolean inStock, boolean isNewCollection, String language, int totalSales) {
         this.imageUrl = imageUrl;
         this.description = description;
         this.regularPrice = regularPrice;

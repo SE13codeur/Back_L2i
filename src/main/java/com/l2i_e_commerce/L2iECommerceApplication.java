@@ -1,16 +1,46 @@
 package com.l2i_e_commerce;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import com.l2i_e_commerce.dao.*;
+import com.l2i_e_commerce.model.*;
+import com.l2i_e_commerce.service.*;
+
+import jakarta.annotation.PostConstruct;
+
 @SpringBootApplication
 public class L2iECommerceApplication {
+
+	@Autowired
+	private BookRepository bookRepository;
+	
+	@Autowired
+	private BookServiceImpl bookService;
 
 	public static void main(String[] args) {
 		SpringApplication.run(L2iECommerceApplication.class, args);
 	}
 
+	@PostConstruct
+	public void indexItemsInMeiliSearch() {
+		try {
+			List<Book> books = bookRepository.findAll();
+			@SuppressWarnings("unchecked")
+			List<Item> items = (List<Item>) (List<?>) books;
+			bookService.index(items);
+	        System.out.println("Books indexed in MeiliSearch successfully.");
+	    } catch (Exception e) {
+	        System.err.println("Error indexing books in MeiliSearch: " + e.getMessage());
+	    }
+	}
 }
+
+
+
 /*
  * package com.l2i_e_commerce;
  * 

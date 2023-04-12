@@ -10,7 +10,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/items")
-public abstract class GenericItemController<T extends Item> {
+public class GenericItemController<T extends Item> {
 
     private final MeiliSearchGenericService<T> itemService;
 
@@ -24,9 +24,10 @@ public abstract class GenericItemController<T extends Item> {
             List<T> items = itemService.findAll();
             return new ResponseEntity<>(items, HttpStatus.OK);
         } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-		return null;
     }
+
 
     @PostMapping
     public ResponseEntity<T> save(@RequestBody T item) throws Exception {

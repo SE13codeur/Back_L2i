@@ -6,17 +6,17 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Data
-@Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Entity
+@PrimaryKeyJoinColumn(name = "id")
 public class Book extends Item {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String isbn13;
 
     @SuppressWarnings("unused")
