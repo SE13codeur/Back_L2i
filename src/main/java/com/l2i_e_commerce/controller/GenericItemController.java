@@ -10,12 +10,22 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/items")
-public class GenericItemController<T extends Item> {
+public abstract class GenericItemController<T extends Item> {
 
     private final MeiliSearchGenericService<T> itemService;
 
-    public GenericItemController(MeiliSearchGenericService<T> itemService) {
-        this.itemService = itemService;
+    protected GenericItemController(MeiliSearchGenericService<T> service) {
+        this.itemService = service;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<T>> getAllItems() {
+        try {
+            List<T> items = itemService.findAll();
+            return new ResponseEntity<>(items, HttpStatus.OK);
+        } catch (Exception e) {
+        }
+		return null;
     }
 
     @PostMapping
@@ -40,7 +50,7 @@ public class GenericItemController<T extends Item> {
         itemService.deleteById(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
-    
+ }   
 	/*
 	 * @GetMapping("/in-stock") public ResponseEntity<List<T>> findItemsInStock() {
 	 * return ResponseEntity.ok(itemService.findItemsInStock()); }
@@ -48,6 +58,6 @@ public class GenericItemController<T extends Item> {
 	 * @GetMapping("/most-sold") public ResponseEntity<List<T>> findMostSoldItems()
 	 * { return ResponseEntity.ok(itemService.findMostSoldItems()); }
 	 */
-}
+
 
 

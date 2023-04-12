@@ -7,13 +7,12 @@ import com.l2i_e_commerce.service.*;
 */import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/books")
+@RequestMapping(path = "/api/items/books", method = RequestMethod.GET)
 public class BookController extends GenericItemController<Book> {
-
 	public BookController(MeiliSearchGenericService<Book> bookService) {
         super(bookService);
     }
-	
+}
 	/*
 	 * @Autowired private BookService bookService;
 	 * 
@@ -30,7 +29,7 @@ public class BookController extends GenericItemController<Book> {
 	 * ResponseEntity.noContent().build(); }
 	 */
 
-}
+
 
 
 

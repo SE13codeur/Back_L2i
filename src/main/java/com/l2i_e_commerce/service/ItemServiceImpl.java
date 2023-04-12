@@ -25,22 +25,27 @@ public class ItemServiceImpl implements ItemService {
 		this.meiliSearchService = null;
     }
     
+    public ItemServiceImpl(Client client) throws Exception {
+        meiliSearchService = new MeiliSearchGenericServiceImpl<Item>(client, "items");
+    }
+    
     public ItemServiceImpl(Client client, String indexUid) throws Exception {
         meiliSearchService = new MeiliSearchGenericServiceImpl<Item>(client, indexUid);
     }
 
     @Override
+	public void index(List<Item> items) throws Exception {		
+	}
+    
+    @Override
     public List<Item> findAll() throws Exception {
         return meiliSearchService.findAll();
     }
 
-    @SuppressWarnings("unchecked")
-	@Override
+    @Override
     public Optional<Item> findById(String id) throws Exception {
-        Long itemId = Long.parseLong(id);
-        return itemRepository.findById(itemId);
+        return meiliSearchService.findById(id);
     }
-
 
     @Override
     public Item save(Item item) throws Exception {
@@ -58,12 +63,7 @@ public class ItemServiceImpl implements ItemService {
         Long itemId = Long.parseLong(id);
         itemRepository.deleteById(itemId);
     }
-
-	@Override
-	public void index(List<Item> items) throws Exception {		
-	}
-
-
+}
 	/*
 	 * @Override public List<Item> findItemsInStock() throws Exception { // Vous
 	 * devez définir les critères de recherche pour les articles en stock // Par
@@ -76,7 +76,6 @@ public class ItemServiceImpl implements ItemService {
 	 * String searchQuery = "sort=sold_count:desc"; return
 	 * meiliSearchService.search(searchQuery); }
 	 */
-}
 
 
 

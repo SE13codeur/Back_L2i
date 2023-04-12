@@ -9,6 +9,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.util.*;
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class MeiliSearchGenericServiceImpl<T extends Item> implements MeiliSearchGenericService<T> {
 
     private final Index meiliSearchIndex;
@@ -62,7 +65,7 @@ public class MeiliSearchGenericServiceImpl<T extends Item> implements MeiliSearc
     public void deleteById(String id) throws Exception {
         meiliSearchIndex.deleteDocument(id);
     }
-
+}
 	/*
 	 * @Override public List<T> findItemsInStock() throws Exception { // Vous devez
 	 * définir les critères de recherche pour les articles en stock // Par exemple,
@@ -77,7 +80,7 @@ public class MeiliSearchGenericServiceImpl<T extends Item> implements MeiliSearc
 	 * meiliSearchIndex.search(searchQuery); return
 	 * objectMapper.readValue(jsonResponse, new TypeReference<List<T>>() {}); }
 	 */
-}
+
 
 
 

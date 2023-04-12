@@ -52,7 +52,6 @@ public class Book extends Item {
     
     @SuppressWarnings("unused")
 	private int version;
-
 }
 
 

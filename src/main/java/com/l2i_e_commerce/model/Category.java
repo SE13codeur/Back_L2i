@@ -18,8 +18,6 @@ public class Category {
     @Column(unique = true)
     private String name;
 
-    private String description;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     private Category parent;
@@ -29,7 +27,6 @@ public class Category {
 
     public Category(String name, String description, Category parent) {
         this.name = name;
-        this.description = description;
         this.parent = parent;
     }
 }
