@@ -17,8 +17,8 @@ public class Sale {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @OneToOne
-    private Item item;
+    @ManyToMany
+    private Set<Book> books;
     
     @Column(nullable = false)
     private BigDecimal discountAmount;
@@ -31,5 +31,3 @@ public class Sale {
 
     private Integer freeItems;
 }
-
-

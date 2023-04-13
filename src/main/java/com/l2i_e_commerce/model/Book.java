@@ -13,6 +13,7 @@ import lombok.*;
 @Builder
 @Entity
 @PrimaryKeyJoinColumn(name = "id")
+@Table(name = "book")
 public class Book extends Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +29,7 @@ public class Book extends Item {
     private String summary;
 
     @JsonIgnore
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "book_author",
         joinColumns = @JoinColumn(name = "book_id"),
@@ -42,9 +43,13 @@ public class Book extends Item {
     private Editor editor;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "books")
+    private Set<Sale> bookSales;
+    
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id")
-    private Category category;
+    private Category booksCategory;
 
     private String pages;
     private String year;

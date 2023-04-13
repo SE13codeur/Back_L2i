@@ -2,6 +2,7 @@ package com.l2i_e_commerce.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -10,10 +11,10 @@ import lombok.*;
 
 
 @Data
-@Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@MappedSuperclass
 public abstract class Item implements MeiliSearchModel {
 	
 	@Id
@@ -27,14 +28,13 @@ public abstract class Item implements MeiliSearchModel {
 
     private BigDecimal regularPrice;
     
-    private boolean inStock;
+    private int quantityInStock;
+    
+    private boolean isInStock;
     
     private boolean isNewCollection;
     
     private String language;
-    
-    @OneToOne(mappedBy = "item", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private Sale sale;
     
     private int totalSales;
 
@@ -54,11 +54,11 @@ public abstract class Item implements MeiliSearchModel {
         this.id = Long.parseLong(meiliSearchId);
     }
     
-    public Item(String imageUrl, String description, BigDecimal regularPrice, boolean inStock, boolean isNewCollection, String language, int totalSales) {
+    public Item(String imageUrl, String description, BigDecimal regularPrice, boolean isInStock, boolean isNewCollection, String language, int totalSales) {
         this.imageUrl = imageUrl;
         this.description = description;
         this.regularPrice = regularPrice;
-        this.inStock = inStock;    	
+        this.isInStock = isInStock;    	
         this.isNewCollection = isNewCollection;
         this.language = language;
         this.totalSales = totalSales;

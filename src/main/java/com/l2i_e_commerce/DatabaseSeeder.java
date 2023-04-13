@@ -97,10 +97,8 @@ public class DatabaseSeeder {
                     .uri(URI.create(url))
                     .header("Content-Type", "application/json")
                     .header("Authorization", "Bearer " + apiKey)
-                    .POST(HttpRequest.BodyPublishers.ofString(sbJson.toString()))
-					/*
-					 * .PUT(HttpRequest.BodyPublishers.ofString(jsonStringWithPrimaryKey))
-					 */                    
+					//.POST(HttpRequest.BodyPublishers.ofString(sbJson.toString()))					
+					.PUT(HttpRequest.BodyPublishers.ofString(sbJson.toString()))                 
                     .build();
 
             HttpResponse<String> httpResponse = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
@@ -288,9 +286,16 @@ public class DatabaseSeeder {
                     .year(year)
                     .summary(description)
                     .version(ThreadLocalRandom.current().nextInt(1, 5))
-                    .category(this.categoryService.findById(1l))
+                    .booksCategory(this.categoryService.findById(1l))
                     .build();
 
+            // Créer et enregistrer un objet Item
+            BigDecimal price = new BigDecimal(priceString.replace("$", "").trim());
+            book.setRegularPrice(price);
+            book.setImageUrl(imageUrl);
+            book.setDescription(description);
+            book.setQuantityInStock(ThreadLocalRandom.current().nextInt(0, 333));
+            
             try {
             	bookService.save(book);
             } catch (DataIntegrityViolationException e) {
@@ -298,14 +303,6 @@ public class DatabaseSeeder {
 				 * System.err.println("Livre déjà présent en base avec cet isbn13 : " + isbn13);
 				 */            }
 
-            // Créer et enregistrer un objet Item
-            Item item = new Book();
-            BigDecimal price = new BigDecimal(priceString.replace("$", "").trim());
-            item.setRegularPrice(price);
-            item.setImageUrl(imageUrl);
-            item.setDescription(description);
-            // Autres attributs si nécessaire
-            itemService.save((Book)item);
 
         } catch (JSONException e) {
 			/*

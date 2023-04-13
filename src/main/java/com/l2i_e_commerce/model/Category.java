@@ -18,11 +18,11 @@ public class Category {
     @Column(unique = true)
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "parent_id")
     private Category parent;
     
-    @OneToMany(mappedBy = "category")
+    @OneToMany
     private List<Book> books;
 
     public Category(String name, String description, Category parent) {
