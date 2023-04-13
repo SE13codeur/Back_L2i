@@ -9,7 +9,7 @@ import com.l2i_e_commerce.service.*;
 @RestController
 @RequestMapping(path = "/api/items/books", method = RequestMethod.GET)
 public class BookController extends GenericItemController<Book> {
-	public BookController(MeiliSearchGenericService<Book> bookService) {
+	public BookController(ItemService<Book, Long> bookService) {
         super(bookService);
     }
 }

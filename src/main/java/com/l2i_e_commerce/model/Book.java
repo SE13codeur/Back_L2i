@@ -2,6 +2,8 @@ package com.l2i_e_commerce.model;
 
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,15 +21,13 @@ public class Book extends Item {
     @Column(unique = true, nullable = false)
     private String isbn13;
 
-    @SuppressWarnings("unused")
-	private String title;
-
-    @SuppressWarnings("unused")
-	private String subtitle;
+    private String title;
+    private String subtitle;
 
     @Column(columnDefinition = "LONGTEXT")
     private String summary;
 
+    @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "book_author",
@@ -36,22 +36,17 @@ public class Book extends Item {
     )
     private Set<Author> authors;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "editor_id")
     private Editor editor;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @SuppressWarnings("unused")
-	private String pages;
-
-    @SuppressWarnings("unused")
-	private String year;
-    
-    @SuppressWarnings("unused")
-	private int version;
+    private String pages;
+    private String year;
+    private int version;
 }
-
-

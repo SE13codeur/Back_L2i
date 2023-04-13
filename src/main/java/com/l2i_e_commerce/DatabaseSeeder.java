@@ -21,67 +21,168 @@ import java.net.http.*;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
-
 import java.util.stream.Collectors;
+
+import com.meilisearch.sdk.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.springframework.transaction.annotation.Transactional;
+import java.time.Duration;
+
+
 
 @Component
 @EnableAsync
 public class DatabaseSeeder {
 
-    private final ItemService itemService;
-    private final BookService bookService;
+    @Autowired
+    private final ItemService<Book, ?> itemService;
+    
+    @Autowired
+    private BookService bookService;
+    
+    @Autowired
     private final CategoryService categoryService;
-
+    
+    @Autowired
+    private ObjectMapper objectMapper;
+    
 
     @Autowired
-    public DatabaseSeeder(ItemService itemService, BookService bookService, 
-                          EditorService editorService, CategoryService categoryService) {
-        this.itemService = itemService;
+    public DatabaseSeeder(ItemService<Book, ?> itemService, BookService bookService, 
+                          CategoryService categoryService) {
         this.bookService = bookService;
         this.categoryService = categoryService;
-  }
+        this.itemService = itemService; 
+    }
+    
+    @Transactional
+    public void indexItemsInMeiliSearch() {
+        System.err.println("Entrée dans la fonction d'indexation...");
+        try {
+            String url = "https://ms-700518c9264c-3155.fra.meilisearch.io/indexes/items/documents";
+            String apiKey = "f536358532bd64afb90653535c616d81c18239d6";
+            Config config = new Config(url, apiKey);
+
+            List<Book> books = this.bookService.findAll();
+            System.err.println("XXX NBR " + books.size());
+            StringBuffer sbJson = new StringBuffer();
+            sbJson.append("[");
+            Boolean isFirstItemTreated = false;
+            for(Item item : books) {
+                System.err.println("sbJson is doing the loop ...");
+
+                if (!isFirstItemTreated) {
+                    isFirstItemTreated = true;
+                } else {
+                    sbJson.append(",");
+                }
+                if (item instanceof Book) {
+                    Book currentBook = (Book) item;
+                    String bookJson = objectMapper.writeValueAsString(currentBook);
+                    sbJson.append(bookJson);
+                    System.err.println("booksJson: XXXXXXXXX" + bookJson);
+                }
+            }
+            sbJson.append("]");
+            System.err.println("sbJson ajouté XXXXXXXX: " + sbJson.toString());
+
+			/*
+			 * String jsonStringWithPrimaryKey = "{\"primaryKey\": \"id\", \"documents\": "
+			 * + sbJson.toString() + "}";
+			 */
+
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest httpRequest = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .header("Content-Type", "application/json")
+                    .header("Authorization", "Bearer " + apiKey)
+                    .POST(HttpRequest.BodyPublishers.ofString(sbJson.toString()))
+					/*
+					 * .PUT(HttpRequest.BodyPublishers.ofString(jsonStringWithPrimaryKey))
+					 */                    
+                    .build();
+
+            HttpResponse<String> httpResponse = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+            int statusCode = httpResponse.statusCode();
+            String responseBody = httpResponse.body();
+
+            if (statusCode >= 400) {
+  
+            } else {
+                System.err.println("MeiliSearch API response status code: " + statusCode);
+                System.err.println("MeiliSearch API response body: " + responseBody);
+
+                if (statusCode == 202) {
+                    try {
+                        JSONObject jsonResponse = new JSONObject(responseBody);
+                        int taskUid = jsonResponse.getInt("taskUid");
+
+                        Thread.sleep(Duration.ofSeconds(2).toMillis());
+
+                        checkTaskStatus("items", taskUid);
+                    } catch (JSONException | InterruptedException e) {
+                        System.err.println("Error parsing JSON or waiting for task status: " + responseBody);
+                        e.printStackTrace();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("XXXXXXXX Erreur: " + e.getMessage());
+        }
+    }
+
+
+    public void checkTaskStatus(String indexUid, int taskUid) {
+        try {
+            String url = "https://ms-700518c9264c-3155.fra.meilisearch.io/indexes/" + indexUid + "/tasks/" + taskUid;
+            String apiKey = "f536358532bd64afb90653535c616d81c18239d6";
+
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest httpRequest = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .header("Authorization", "Bearer " + apiKey)
+                    .GET()
+                    .build();
+
+            HttpResponse<String> httpResponse = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+            int statusCode = httpResponse.statusCode();
+            String responseBody = httpResponse.body();
+
+            System.out.println("MeiliSearch Task API response status code: " + statusCode);
+            System.out.println("MeiliSearch Task API response body: " + responseBody);
+
+        } catch (Exception e) {
+            System.err.println("Error checking task status: " + e.getMessage());
+        }
+    }
 
     @PostConstruct
     @Profile("dev")
     public void seedDatabaseForDevelopment() {
-        // données pour l'environnement de développement
-    	/*
-    	 * public void seedDatabasePerso() { //test pour un livre déjà existant avec une
-    	 * version différente Category categoryIT = new Category();
-    	 * categoryIT.setName("IT"); categoryIT = categoryService.save(categoryIT);
-    	 * 
-    	 * Set<Author> authors1 = new HashSet<>(); authors1.add(new Author("Joyce Kay",
-    	 * "Avila"));
-    	 * 
-    	 * Book book1 = Book.builder() .title("Snowflake: The Definitive Guide")
-    	 * .authors(authors1) .editor(new Editor("Penguin House")) .category(categoryIT)
-    	 * .isbn13("9781098103828") .pages("450") .year("2023") .version(3) .build();
-    	 * book1 = bookService.save(book1); itemService.save(new Item(book1,
-    	 * "https://itbook.store/img/books/9781098103828.png", "", new
-    	 * BigDecimal("58.90"), true, "English")); }
-    	 */
         seedDatabase();
+        indexItemsInMeiliSearch();
     }
 
-    @PostConstruct
-    @Profile("prod")
-    public void seedDatabaseForProduction() {
-    	seedDatabase();
-    }
+	/*
+	 * @PostConstruct
+	 * 
+	 * @Profile("prod") public void seedDatabaseForProduction() { seedDatabase();
+	 * indexItemsInMeiliSearch(); }
+	 */
     
     @PostConstruct
     public void seedDatabase() {
-    	// Créer et enregistrer un objet Category
     	Category category = new Category();
     	category.setName("Livres");
     	try {
             categoryService.save(category);
 		} catch (DataIntegrityViolationException e) {
-            System.err.println("Catégorie déjà présente en base avec ce nom : " + category.getName());
-
-		}
+			/*
+			 * System.err.println("Catégorie déjà présente en base avec ce nom : " +
+			 * category.getName());
+			 */		}
     	
-        
         for (int i = 1; i <= 8; i++) {
             fetchData(i);
         }
@@ -99,7 +200,6 @@ public class DatabaseSeeder {
                 .thenApply(this::parse);
     }
 
-
     public String parse(String responseBody) {
         try {
             JSONObject json = new JSONObject(responseBody);
@@ -110,8 +210,10 @@ public class DatabaseSeeder {
                 getBookDetails(isbn13);
             }
         } catch (JSONException e) {
-            System.err.println("Error parsing JSON in parse method: " + responseBody);
-            e.printStackTrace();
+			/*
+			 * System.err.println("Error parsing JSON in parse method: " + responseBody);
+			 * e.printStackTrace();
+			 */
         }
         return null;
     }
@@ -128,8 +230,9 @@ public class DatabaseSeeder {
 					try {
 						return parseBookDetails(t);
 					} catch (Exception e) {
-						System.err.println(e.getMessage());
-					}
+						/*
+						 * System.err.println(e.getMessage());
+						 */					}
 					return t;
 				})
                 .join();
@@ -191,8 +294,9 @@ public class DatabaseSeeder {
             try {
             	bookService.save(book);
             } catch (DataIntegrityViolationException e) {
-                System.err.println("Livre déjà présent en base avec cet isbn13 : " + isbn13);
-            }
+				/*
+				 * System.err.println("Livre déjà présent en base avec cet isbn13 : " + isbn13);
+				 */            }
 
             // Créer et enregistrer un objet Item
             Item item = new Book();
@@ -204,8 +308,10 @@ public class DatabaseSeeder {
             itemService.save((Book)item);
 
         } catch (JSONException e) {
-            System.err.println("Error parsing JSON in parseBookDetails method: " + responseBody);
-            e.printStackTrace();
+			/*
+			 * System.err.println("Error parsing JSON in parseBookDetails method: " +
+			 * responseBody); e.printStackTrace();
+			 */
         }
         return null;
     }

@@ -15,8 +15,8 @@ public class Stock {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToMany
-    private Set<Item> items;
+    @OneToOne
+    private Item item;
 
     private int quantityInStock;
 

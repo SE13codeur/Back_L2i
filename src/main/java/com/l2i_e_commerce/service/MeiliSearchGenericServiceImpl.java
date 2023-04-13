@@ -28,7 +28,7 @@ public class MeiliSearchGenericServiceImpl<T extends Item> implements MeiliSearc
     }
 
     @Override
-    public List<T> findAll() throws Exception {
+    public List<T> findAllMeilisearch() throws Exception {
         String searchResultJson = meiliSearchIndex.rawSearch("");
         JsonNode searchResultNode = objectMapper.readTree(searchResultJson);
         JsonNode hitsNode = searchResultNode.get("hits");
@@ -60,28 +60,8 @@ public class MeiliSearchGenericServiceImpl<T extends Item> implements MeiliSearc
         return objectMapper.readValue(jsonResponse, new TypeReference<T>() {});
     }
 
-
     @Override
     public void deleteById(String id) throws Exception {
         meiliSearchIndex.deleteDocument(id);
     }
 }
-	/*
-	 * @Override public List<T> findItemsInStock() throws Exception { // Vous devez
-	 * définir les critères de recherche pour les articles en stock // Par exemple,
-	 * en utilisant un attribut "stock" dans vos objets Item String searchQuery =
-	 * "stock>0"; String jsonResponse = meiliSearchIndex.search(searchQuery); return
-	 * objectMapper.readValue(jsonResponse, new TypeReference<List<T>>() {}); }
-	 * 
-	 * @Override public List<T> findMostSoldItems() throws Exception { // Vous devez
-	 * définir les critères de recherche pour les articles les plus vendus // Par
-	 * exemple, en utilisant un attribut "sold_count" dans vos objets Item String
-	 * searchQuery = "sort=sold_count:desc"; String jsonResponse =
-	 * meiliSearchIndex.search(searchQuery); return
-	 * objectMapper.readValue(jsonResponse, new TypeReference<List<T>>() {}); }
-	 */
-
-
-
-
-

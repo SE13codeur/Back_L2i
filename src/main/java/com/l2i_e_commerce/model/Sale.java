@@ -2,6 +2,8 @@ package com.l2i_e_commerce.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Set;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,10 +17,9 @@ public class Sale {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @ManyToOne
-    @JoinColumn(name = "item_id", nullable = false)
+    @OneToOne
     private Item item;
-
+    
     @Column(nullable = false)
     private BigDecimal discountAmount;
 

@@ -19,7 +19,7 @@ public class Editor {
     @Column(unique = true)
     private String name;
 
-    @OneToMany(mappedBy = "editor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "editor", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Book> books;
     
     public Editor(String name) {

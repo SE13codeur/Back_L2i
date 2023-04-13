@@ -1,24 +1,22 @@
 package com.l2i_e_commerce.service;
 
 import java.util.*;
+import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.l2i_e_commerce.model.*;
 import com.l2i_e_commerce.dao.*;
 
-import com.meilisearch.sdk.*;
-
-import com.l2i_e_commerce.configuration.MeiliSearchProperties;
-
 @Service
 @Primary
 public class BookServiceImpl implements BookService {
-
-	@Autowired
-	private MeiliSearchProperties meiliSearchProperties;
 	
 	@Autowired
 	private BookRepository bookRepository;
@@ -29,31 +27,6 @@ public class BookServiceImpl implements BookService {
 	@Autowired
 	private AuthorRepository authorRepository;
 	
-	@Override
-	public void index(List<Item> items) throws Exception {
-	    Config config = new Config(meiliSearchProperties.getUrl(), meiliSearchProperties.getApiKey());
-	    Client client = new Client(config);
-	    Index index = client.index("items");
-
-	    for (Item item : items) {
-	        if (item instanceof Book) {
-	            Book book = (Book) item;
-	            index.addDocuments(Collections.singletonList(book).toString());
-	        }
-	    }
-	}
-
-
-
-
-
-	@Override
-	public Item save(Item item) throws Exception {
-		if (item instanceof Book) {
-			return save((Book) item);
-		}
-		throw new Exception("Invalid item type");
-	}
 
 	@Override
 	public Book save(Book book) {
@@ -86,39 +59,203 @@ public class BookServiceImpl implements BookService {
 		return bookRepository.save(book);
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public List<Item> findAll() throws Exception {
-		return (List<Item>)(List<?>) bookRepository.findAll();
-	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public Optional<Item> findById(String id) throws Exception {
-		Long bookId = Long.parseLong(id);
-		return (Optional<Item>)(Optional<?>) bookRepository.findById(bookId);
-	}
-
-	@Override
-	public Item update(Item item) throws Exception {
-		if (item instanceof Book) {
-			return update((Book) item);
-		}
-		throw new Exception("Invalid item type");
-	}
-
-	@Override
 	public Book update(Book book) {
 		return bookRepository.save(book);
 	}
 
 	@Override
-	public void deleteById(String id) throws Exception {
-		Long bookId = Long.parseLong(id);
-		bookRepository.deleteById(bookId);
+    public List<Book> findAll() {
+        return bookRepository.findAll();
+    }
+
+
+	
+
+
+	
+
+
+	@Override
+	public void deleteAllById(Iterable ids) {
+		// TODO Auto-generated method stub
+		
 	}
 
 
+	@Override
+	public void deleteAll(Iterable entities) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void deleteAll() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public List findAll(Sort sort) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public Page findAll(Pageable pageable) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public Optional findOne(Example example) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public Page findAll(Example example, Pageable pageable) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public long count(Example example) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+
+	@Override
+	public boolean exists(Example example) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	@Override
+	public Object findBy(Example example, Function queryFunction) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public void flush() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public <S extends Book> S saveAndFlush(S entity) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public <S extends Book> List<S> saveAllAndFlush(Iterable<S> entities) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public void deleteAllInBatch(Iterable<Book> entities) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void deleteAllByIdInBatch(Iterable<Long> ids) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void deleteAllInBatch() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public Book getOne(Long id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public Book getById(Long id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public Book getReferenceById(Long id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public <S extends Book> List<S> findAll(Example<S> example) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public <S extends Book> List<S> findAll(Example<S> example, Sort sort) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public <S extends Book> List<S> saveAll(Iterable<S> entities) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public List<Book> findAllById(Iterable<Long> ids) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public Optional<Book> findById(Long id) {
+		// TODO Auto-generated method stub
+		return Optional.empty();
+	}
+
+
+	@Override
+	public boolean existsById(Long id) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	@Override
+	public long count() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 
 
 	@Override
@@ -126,5 +263,14 @@ public class BookServiceImpl implements BookService {
 		// TODO Auto-generated method stub
 		
 	}
+
+
+	@Override
+	public void delete(Book entity) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	
 
 }

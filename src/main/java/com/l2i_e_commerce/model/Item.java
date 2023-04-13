@@ -2,6 +2,9 @@ package com.l2i_e_commerce.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,13 +33,15 @@ public abstract class Item implements MeiliSearchModel {
     
     private String language;
     
-    @OneToOne(mappedBy = "item", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "item", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Sale sale;
     
     private int totalSales;
 
+    @JsonIgnore
     private LocalDateTime createdAt;
-
+    
+    @JsonIgnore
     private LocalDateTime updatedAt;
     
     @Override

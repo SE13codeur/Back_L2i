@@ -64,3 +64,6 @@ HELP.md
 
 # Meilisearch Java client
 /.meilisearch/
+
+# Ignore the 'js' folder and all its files
+js/
