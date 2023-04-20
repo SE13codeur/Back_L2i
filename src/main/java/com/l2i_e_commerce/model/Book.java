@@ -23,12 +23,9 @@ public class Book extends Item {
     private String isbn13;
 
     private String title;
+    
     private String subtitle;
 
-    @Column(columnDefinition = "LONGTEXT")
-    private String summary;
-
-    @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "book_author",
@@ -37,8 +34,7 @@ public class Book extends Item {
     )
     private Set<Author> authors;
 
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "editor_id")
     private Editor editor;
 
@@ -46,8 +42,7 @@ public class Book extends Item {
     @ManyToMany(mappedBy = "books")
     private Set<Sale> bookSales;
     
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "category_id")
     private Category booksCategory;
 

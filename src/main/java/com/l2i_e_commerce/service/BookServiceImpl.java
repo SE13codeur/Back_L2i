@@ -9,6 +9,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.repository.query.FluentQuery.FetchableFluentQuery;
 import org.springframework.stereotype.Service;
 
 import com.l2i_e_commerce.model.*;
@@ -66,84 +67,9 @@ public class BookServiceImpl implements BookService {
 
 	@Override
     public List<Book> findAll() {
+
         return bookRepository.findAll();
     }
-
-
-	
-
-
-	
-
-
-	@Override
-	public void deleteAllById(Iterable ids) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	@Override
-	public void deleteAll(Iterable entities) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	@Override
-	public void deleteAll() {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	@Override
-	public List findAll(Sort sort) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-	@Override
-	public Page findAll(Pageable pageable) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-	@Override
-	public Optional findOne(Example example) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-	@Override
-	public Page findAll(Example example, Pageable pageable) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-	@Override
-	public long count(Example example) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-
-	@Override
-	public boolean exists(Example example) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-
-	@Override
-	public Object findBy(Example example, Function queryFunction) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 
 	@Override
@@ -238,13 +164,6 @@ public class BookServiceImpl implements BookService {
 
 
 	@Override
-	public Optional<Book> findById(Long id) {
-		// TODO Auto-generated method stub
-		return Optional.empty();
-	}
-
-
-	@Override
 	public boolean existsById(Long id) {
 		// TODO Auto-generated method stub
 		return false;
@@ -271,6 +190,81 @@ public class BookServiceImpl implements BookService {
 		
 	}
 
-	
+
+	@Override
+	public void deleteAllById(Iterable<? extends Long> ids) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void deleteAll(Iterable<? extends Book> entities) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void deleteAll() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public List<Book> findAll(Sort sort) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public Page<Book> findAll(Pageable pageable) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public <S extends Book> Optional<S> findOne(Example<S> example) {
+		// TODO Auto-generated method stub
+		return Optional.empty();
+	}
+
+
+	@Override
+	public <S extends Book> Page<S> findAll(Example<S> example, Pageable pageable) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public <S extends Book> long count(Example<S> example) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+
+	@Override
+	public <S extends Book> boolean exists(Example<S> example) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	@Override
+	public <S extends Book, R> R findBy(Example<S> example, Function<FetchableFluentQuery<S>, R> queryFunction) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public Optional<Book> findById(Long id) {
+		// TODO Auto-generated method stub
+		return Optional.empty();
+	}
 
 }

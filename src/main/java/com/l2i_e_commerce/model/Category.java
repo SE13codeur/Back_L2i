@@ -18,7 +18,7 @@ public class Category {
     @Column(unique = true)
     private String name;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "parent_id")
     private Category parent;
     

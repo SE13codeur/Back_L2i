@@ -4,6 +4,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+import org.springframework.boot.context.properties.bind.DefaultValue;
+import org.springframework.cglib.core.TinyBitSet;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
@@ -30,11 +33,14 @@ public abstract class Item implements MeiliSearchModel {
     
     private int quantityInStock;
     
-    private boolean isInStock;
     
-    private boolean isNewCollection;
+    private short isInStock = 1;
     
-    private String language;
+    private float rating;
+    
+    private short isNewCollection;
+    
+    private String language = "English";
     
     private int totalSales;
 
@@ -54,7 +60,7 @@ public abstract class Item implements MeiliSearchModel {
         this.id = Long.parseLong(meiliSearchId);
     }
     
-    public Item(String imageUrl, String description, BigDecimal regularPrice, boolean isInStock, boolean isNewCollection, String language, int totalSales) {
+    public Item(String imageUrl, String description, BigDecimal regularPrice, short isInStock, short isNewCollection, String language, int totalSales) {
         this.imageUrl = imageUrl;
         this.description = description;
         this.regularPrice = regularPrice;

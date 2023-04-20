@@ -19,7 +19,7 @@ public class Author {
 
     private String lastName;
     
-    @ManyToMany(mappedBy = "authors", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "authors", fetch = FetchType.EAGER)
     private Set<Book> books;
     
     public Author(String firstName, String lastName) {

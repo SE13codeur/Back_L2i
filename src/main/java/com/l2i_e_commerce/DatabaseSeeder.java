@@ -1,5 +1,6 @@
 package com.l2i_e_commerce;
 
+import com.l2i_e_commerce.dao.AuthorRepository;
 import com.l2i_e_commerce.model.*;
 import com.l2i_e_commerce.service.*;
 
@@ -42,16 +43,16 @@ public class DatabaseSeeder {
     private BookService bookService;
     
     @Autowired
-    private final CategoryService categoryService;
+    private AuthorRepository authorRepository;
     
     @Autowired
-    private ObjectMapper objectMapper;
-    
+    private final CategoryService categoryService;
 
     @Autowired
     public DatabaseSeeder(ItemService<Book, ?> itemService, BookService bookService, 
-                          CategoryService categoryService) {
+                          AuthorRepository authorRepository, CategoryService categoryService) {
         this.bookService = bookService;
+        this.authorRepository = authorRepository;
         this.categoryService = categoryService;
         this.itemService = itemService; 
     }
@@ -79,9 +80,121 @@ public class DatabaseSeeder {
                 }
                 if (item instanceof Book) {
                     Book currentBook = (Book) item;
-                    String bookJson = objectMapper.writeValueAsString(currentBook);
-                    sbJson.append(bookJson);
-                    System.err.println("booksJson: XXXXXXXXX" + bookJson);
+                    sbJson.append("{");
+                    sbJson.append("\"id\"");
+                    sbJson.append(":");
+                    sbJson.append(currentBook.getId());
+                    sbJson.append(",");
+                    sbJson.append("\"imageUrl\"");
+                    sbJson.append(":");
+                    sbJson.append("\"" + currentBook.getImageUrl() + "\"");
+                    sbJson.append(",");
+                    sbJson.append("\"description\"");
+                    sbJson.append(":");
+                    sbJson.append("\"" + currentBook.getDescription() + "\"");
+                    sbJson.append(",");
+                    sbJson.append("\"regularPrice\"");
+                    sbJson.append(":");
+                    sbJson.append(currentBook.getRegularPrice());
+                    sbJson.append(",");
+                    sbJson.append("\"quantityInStock\"");
+                    sbJson.append(":");
+                    sbJson.append(currentBook.getQuantityInStock());
+                    sbJson.append(",");
+                    sbJson.append("\"rating\"");
+                    sbJson.append(":");
+                    sbJson.append(currentBook.getRating());
+                    sbJson.append(",");
+                    sbJson.append("\"isNewCollection\"");
+                    sbJson.append(":");
+                    sbJson.append(currentBook.getRating());
+                    sbJson.append(",");
+                    sbJson.append("\"language\"");
+                    sbJson.append(":");
+                    sbJson.append("\"" + currentBook.getLanguage() + "\"");
+                    sbJson.append(",");
+                    sbJson.append("\"totalSales\"");
+                    sbJson.append(":");
+                    sbJson.append("\"" + currentBook.getTotalSales() + "\"");
+                    sbJson.append(",");
+                    sbJson.append("\"isbn13\"");
+                    sbJson.append(":");
+                    sbJson.append("\"" + currentBook.getIsbn13() + "\"");
+                    sbJson.append(",");
+                    sbJson.append("\"title\"");
+                    sbJson.append(":");
+                    sbJson.append("\"" + currentBook.getTitle() + "\"");
+                    sbJson.append(",");
+                    sbJson.append("\"subtitle\"");
+                    sbJson.append(":");
+                    sbJson.append("\"" + currentBook.getSubtitle() + "\"");
+                    sbJson.append(",");
+                    sbJson.append("\"pages\"");
+                    sbJson.append(":");
+                    sbJson.append("\"" + currentBook.getPages() + "\"");
+                    sbJson.append(",");
+                    sbJson.append("\"year\"");
+                    sbJson.append(":");
+                    sbJson.append("\"" + currentBook.getYear() + "\"");
+                    sbJson.append(",");
+                    sbJson.append("\"version\"");
+                    sbJson.append(":");
+                    sbJson.append(currentBook.getVersion());
+                    sbJson.append(",");
+                    sbJson.append("\"isInStock\"");
+                    sbJson.append(":");
+                    sbJson.append(currentBook.getIsInStock() == 1 ? true : false);
+                    sbJson.append(",");
+                    sbJson.append("\"meiliSearchId\"");
+                    sbJson.append(":");
+                    sbJson.append("\"" + currentBook.getMeiliSearchId() + "\"");
+                    sbJson.append(",");
+                    sbJson.append("\"category\"");
+                    sbJson.append(":");
+                    sbJson.append("{");
+                    sbJson.append("\"id\"");
+                    sbJson.append(":");
+                    sbJson.append("\"" + currentBook.getBooksCategory().getId() + "\"");
+                    sbJson.append(",");
+                    sbJson.append("\"name\"");
+                    sbJson.append(":");
+                    sbJson.append("\"" + currentBook.getBooksCategory().getName() + "\"");
+                    sbJson.append(",");
+                    sbJson.append("\"parent_id\"");
+                    sbJson.append(":");
+                    sbJson.append("\"" + currentBook.getBooksCategory().getParent().getId() + "\"");
+                    sbJson.append("}");
+                    sbJson.append(",");
+                    sbJson.append("\"authors\"");
+                    sbJson.append(":");
+                    sbJson.append("[");
+                    Boolean firstCurrentAuthorTreated = false;
+                    Set<Author> authors = authorRepository.findByBooks_Id(currentBook.getId());
+                    System.err.println("nbr AUTHORS : " + authors.size());
+                    for(Author currentAuthor :  authors) {
+                    	if (firstCurrentAuthorTreated) {
+                    		sbJson.append(",");
+                    	} else {
+                    		firstCurrentAuthorTreated = true;
+                    	}
+                    	sbJson.append("{");
+                    	sbJson.append("\"id\"");
+                    	sbJson.append(":");
+                    	sbJson.append(currentAuthor.getId());
+                    	sbJson.append(",");
+                    	sbJson.append("\"firstname\"");
+                    	sbJson.append(":");
+                    	sbJson.append("\"" + currentAuthor.getFirstName() + "\"");
+                    	sbJson.append(",");
+                    	sbJson.append("\"lastname\"");
+                    	sbJson.append(":");
+                    	sbJson.append("\"" + currentAuthor.getLastName() + "\"");
+                    	sbJson.append("}");
+                    }
+                    sbJson.append("]");
+
+                    sbJson.append("}");
+
                 }
             }
             sbJson.append("]");
@@ -171,11 +284,30 @@ public class DatabaseSeeder {
     
     @PostConstruct
     public void seedDatabase() {
-    	Category category = new Category();
-    	category.setName("Livres");
+    	Category itemsCategory = new Category();
+    	itemsCategory.setName("Items");
+    	Category booksCategory = new Category();
+    	booksCategory.setParent(itemsCategory);
+    	booksCategory.setName("Livres");
+    	Category moviesCategory = new Category();
+    	moviesCategory.setName("Vidéos");
+    	moviesCategory.setParent(itemsCategory);
+    	Category oldCategory = new Category();
+    	oldCategory.setName("Anciens");
+    	oldCategory.setParent(booksCategory);
+    	Category newCategory = new Category();
+    	newCategory.setParent(booksCategory);
+    	newCategory.setName("Récents");
+    	
     	try {
-            categoryService.save(category);
-		} catch (DataIntegrityViolationException e) {
+            categoryService.save(itemsCategory);
+            categoryService.save(booksCategory);
+            categoryService.save(moviesCategory);
+            categoryService.save(oldCategory);
+            categoryService.save(newCategory);
+
+
+    	} catch (DataIntegrityViolationException e) {
 			/*
 			 * System.err.println("Catégorie déjà présente en base avec ce nom : " +
 			 * category.getName());
@@ -249,7 +381,7 @@ public class DatabaseSeeder {
             String pages = json.getString("pages");
             String year = json.getString("year");
             String description = json.getString("desc");
-            int maxLength = 404;
+            int maxLength = 777;
 
             if (description.length() > maxLength) {
                 description = description.substring(0, maxLength - 3) + "...";
@@ -284,9 +416,11 @@ public class DatabaseSeeder {
                     .isbn13(isbn13)
                     .pages(pages)
                     .year(year)
-                    .summary(description)
                     .version(ThreadLocalRandom.current().nextInt(1, 5))
-                    .booksCategory(this.categoryService.findById(1l))
+                    .booksCategory(
+                    		Integer.parseInt(year) < 2017 ? 
+                    				this.categoryService.findById(4l) :
+                    				this.categoryService.findById(5l))
                     .build();
 
             // Créer et enregistrer un objet Item
@@ -294,6 +428,9 @@ public class DatabaseSeeder {
             book.setRegularPrice(price);
             book.setImageUrl(imageUrl);
             book.setDescription(description);
+            book.setIsNewCollection((short) (Integer.parseInt(year) >= 2020 ?
+            						1 : 0)
+            		);
             book.setQuantityInStock(ThreadLocalRandom.current().nextInt(0, 333));
             
             try {
