@@ -1,6 +1,6 @@
 package com.l2i_e_commerce;
 
-import com.l2i_e_commerce.dao.AuthorRepository;
+import com.l2i_e_commerce.dao.*;
 import com.l2i_e_commerce.model.*;
 import com.l2i_e_commerce.service.*;
 
@@ -25,7 +25,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import com.meilisearch.sdk.*;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
@@ -46,13 +45,17 @@ public class DatabaseSeeder {
     private AuthorRepository authorRepository;
     
     @Autowired
+    private EditorRepository editorRepository;
+    
+    @Autowired
     private final CategoryService categoryService;
 
     @Autowired
     public DatabaseSeeder(ItemService<Book, ?> itemService, BookService bookService, 
-                          AuthorRepository authorRepository, CategoryService categoryService) {
+                          AuthorRepository authorRepository, EditorRepository editorRepository, CategoryService categoryService) {
         this.bookService = bookService;
         this.authorRepository = authorRepository;
+        this.editorRepository = editorRepository;
         this.categoryService = categoryService;
         this.itemService = itemService; 
     }
@@ -107,7 +110,7 @@ public class DatabaseSeeder {
                     sbJson.append(",");
                     sbJson.append("\"isNewCollection\"");
                     sbJson.append(":");
-                    sbJson.append(currentBook.getRating());
+                    sbJson.append(currentBook.getIsNewCollection() == 1 ? true : false);
                     sbJson.append(",");
                     sbJson.append("\"language\"");
                     sbJson.append(":");
@@ -170,7 +173,6 @@ public class DatabaseSeeder {
                     sbJson.append("[");
                     Boolean firstCurrentAuthorTreated = false;
                     Set<Author> authors = authorRepository.findByBooks_Id(currentBook.getId());
-                    System.err.println("nbr AUTHORS : " + authors.size());
                     for(Author currentAuthor :  authors) {
                     	if (firstCurrentAuthorTreated) {
                     		sbJson.append(",");
@@ -192,7 +194,20 @@ public class DatabaseSeeder {
                     	sbJson.append("}");
                     }
                     sbJson.append("]");
-
+                    sbJson.append(",");
+                    sbJson.append("\"editor\"");
+                    sbJson.append(":");
+                    Editor editor = editorRepository.findByBooks_Id(currentBook.getId());
+                    	
+                    	sbJson.append("{");
+                    	sbJson.append("\"id\"");
+                    	sbJson.append(":");
+                    	sbJson.append(editor.getId());
+                    	sbJson.append(",");
+                    	sbJson.append("\"name\"");
+                    	sbJson.append(":");
+                    	sbJson.append("\"" + editor.getName().replace("'","\'") + "\"");
+                    	sbJson.append("}");
                     sbJson.append("}");
 
                 }
@@ -381,6 +396,7 @@ public class DatabaseSeeder {
             String pages = json.getString("pages");
             String year = json.getString("year");
             String description = json.getString("desc");
+            String rating = json.getString("rating");
             int maxLength = 777;
 
             if (description.length() > maxLength) {
@@ -428,10 +444,11 @@ public class DatabaseSeeder {
             book.setRegularPrice(price);
             book.setImageUrl(imageUrl);
             book.setDescription(description);
-            book.setIsNewCollection((short) (Integer.parseInt(year) >= 2020 ?
+            book.setIsNewCollection((short) (Integer.parseInt(year) >= 2022 ?
             						1 : 0)
             		);
             book.setQuantityInStock(ThreadLocalRandom.current().nextInt(0, 333));
+            book.setRating((float) Integer.parseInt(rating));
             
             try {
             	bookService.save(book);
