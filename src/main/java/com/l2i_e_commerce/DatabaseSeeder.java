@@ -7,6 +7,7 @@ import com.l2i_e_commerce.service.*;
 import jakarta.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.scheduling.annotation.Async;
@@ -35,12 +36,22 @@ import java.time.Duration;
 @EnableAsync
 public class DatabaseSeeder {
 
+    @Value("${meilisearch.url}")
+    private String meilisearchUrl;
+
+    @Value("${meilisearch.apikey}")
+    private String meilisearchApiKey;
+
+    @Value("${meilisearch.indexUid}")
+    private String meilisearchIndexUid;
+
+
     @Autowired
     private final ItemService<Book, ?> itemService;
-    
+
     @Autowired
     private BookService bookService;
-    
+
     @Autowired
     private AuthorRepository authorRepository;
     
@@ -62,20 +73,14 @@ public class DatabaseSeeder {
     
     @Transactional
     public void indexItemsInMeiliSearch() {
-        System.err.println("Entrée dans la fonction d'indexation...");
         try {
-            String url = "https://ms-700518c9264c-3155.fra.meilisearch.io/indexes/items/documents";
-            String apiKey = "f536358532bd64afb90653535c616d81c18239d6";
-            Config config = new Config(url, apiKey);
 
             List<Book> books = this.bookService.findAll();
-            System.err.println("XXX NBR " + books.size());
+            System.err.println("NBR ITEMS MYSQL " + books.size());
             StringBuffer sbJson = new StringBuffer();
             sbJson.append("[");
             Boolean isFirstItemTreated = false;
             for(Item item : books) {
-                System.err.println("sbJson is doing the loop ...");
-
                 if (!isFirstItemTreated) {
                     isFirstItemTreated = true;
                 } else {
@@ -213,7 +218,7 @@ public class DatabaseSeeder {
                 }
             }
             sbJson.append("]");
-            System.err.println("sbJson ajouté XXXXXXXX: " + sbJson.toString());
+            System.err.println("sbJson ajouté : " + sbJson.toString());
 
 			/*
 			 * String jsonStringWithPrimaryKey = "{\"primaryKey\": \"id\", \"documents\": "
@@ -222,9 +227,9 @@ public class DatabaseSeeder {
 
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest httpRequest = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
+                    .uri(URI.create(this.meilisearchUrl))
                     .header("Content-Type", "application/json")
-                    .header("Authorization", "Bearer " + apiKey)
+                    .header("Authorization", "Bearer " + this.meilisearchApiKey)
 					//.POST(HttpRequest.BodyPublishers.ofString(sbJson.toString()))					
 					.PUT(HttpRequest.BodyPublishers.ofString(sbJson.toString()))                 
                     .build();
@@ -236,9 +241,6 @@ public class DatabaseSeeder {
             if (statusCode >= 400) {
   
             } else {
-                System.err.println("MeiliSearch API response status code: " + statusCode);
-                System.err.println("MeiliSearch API response body: " + responseBody);
-
                 if (statusCode == 202) {
                     try {
                         JSONObject jsonResponse = new JSONObject(responseBody);
@@ -246,27 +248,26 @@ public class DatabaseSeeder {
 
                         Thread.sleep(Duration.ofSeconds(2).toMillis());
 
-                        checkTaskStatus("items", taskUid);
+                        checkTaskStatus(this.meilisearchIndexUid, taskUid);
                     } catch (JSONException | InterruptedException e) {
-                        System.err.println("Error parsing JSON or waiting for task status: " + responseBody);
                         e.printStackTrace();
                     }
                 }
             }
         } catch (Exception e) {
-            System.err.println("XXXXXXXX Erreur: " + e.getMessage());
+            System.err.println("Erreur: " + e.getMessage());
         }
     }
 
 
     public void checkTaskStatus(String indexUid, int taskUid) {
         try {
-            String url = "https://ms-700518c9264c-3155.fra.meilisearch.io/indexes/" + indexUid + "/tasks/" + taskUid;
-            String apiKey = "f536358532bd64afb90653535c616d81c18239d6";
+            String taskUrl = this.meilisearchUrl + "/indexes/" + indexUid + "/tasks/" + taskUid;
+            String apiKey = this.meilisearchApiKey;
 
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest httpRequest = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
+                    .uri(URI.create(taskUrl))
                     .header("Authorization", "Bearer " + apiKey)
                     .GET()
                     .build();
@@ -356,10 +357,7 @@ public class DatabaseSeeder {
         }
 
         } catch (DataIntegrityViolationException e) {
-            /*
-             * System.err.println("Catégorie déjà présente en base avec ce nom : " +
-             * category.getName());
-             */		}
+        }
 
         for (int i = 1; i <= 8; i++) {
             fetchData(i);
@@ -389,10 +387,7 @@ public class DatabaseSeeder {
                 getBookDetails(isbn13);
             }
         } catch (JSONException e) {
-			/*
-			 * System.err.println("Error parsing JSON in parse method: " + responseBody);
-			 * e.printStackTrace();
-			 */
+
         }
         return null;
     }
@@ -409,9 +404,7 @@ public class DatabaseSeeder {
 					try {
 						return parseBookDetails(t);
 					} catch (Exception e) {
-						/*
-						 * System.err.println(e.getMessage());
-						 */					}
+					}
 					return t;
 				})
                 .join();
@@ -488,16 +481,11 @@ public class DatabaseSeeder {
             try {
             	bookService.save(book);
             } catch (DataIntegrityViolationException e) {
-				/*
-				 * System.err.println("Livre déjà présent en base avec cet isbn13 : " + isbn13);
-				 */            }
+            }
 
 
         } catch (JSONException e) {
-			/*
-			 * System.err.println("Error parsing JSON in parseBookDetails method: " +
-			 * responseBody); e.printStackTrace();
-			 */
+
         }
         return null;
     }
