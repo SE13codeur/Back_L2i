@@ -12,8 +12,10 @@ public class DatabaseConnectorServiceImpl implements DatabaseConnectorService {
     public DatabaseConnectorServiceImpl(MeiliSearchGenericService<Item> meiliSearchService) {
     }
 
-    @Override
-    public void fetchAndIndexItems() {
-    }
+	@Override
+	public void fetchAndIndexItems() throws Exception {
+		// TODO Auto-generated method stub
+		
+	}    
 }
 

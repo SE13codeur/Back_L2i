@@ -46,9 +46,9 @@ public class DatabaseSeeder {
     
     @Autowired
     private EditorRepository editorRepository;
-    
+
     @Autowired
-    private final CategoryService categoryService;
+    private CategoryService categoryService;
 
     @Autowired
     public DatabaseSeeder(ItemService<Book, ?> itemService, BookService bookService, 
@@ -296,42 +296,76 @@ public class DatabaseSeeder {
 	 * @Profile("prod") public void seedDatabaseForProduction() { seedDatabase();
 	 * indexItemsInMeiliSearch(); }
 	 */
-    
+
     @PostConstruct
     public void seedDatabase() {
-    	Category itemsCategory = new Category();
-    	itemsCategory.setName("Items");
-    	Category booksCategory = new Category();
-    	booksCategory.setParent(itemsCategory);
-    	booksCategory.setName("Livres");
-    	Category moviesCategory = new Category();
-    	moviesCategory.setName("Vidéos");
-    	moviesCategory.setParent(itemsCategory);
-    	Category oldCategory = new Category();
-    	oldCategory.setName("Anciens");
-    	oldCategory.setParent(booksCategory);
-    	Category newCategory = new Category();
-    	newCategory.setParent(booksCategory);
-    	newCategory.setName("Récents");
-    	
-    	try {
+        try {
+        Category itemsCategory = null;
+        if (!categoryService.categoryExists("Articles", null)) {
+            itemsCategory = new Category();
+            itemsCategory.setName("Articles");
             categoryService.save(itemsCategory);
+        }
+
+        Category booksCategory = null;
+        if (itemsCategory!= null && !categoryService.categoryExists("Livres", itemsCategory.getId())) {
+            booksCategory = new Category();
+            booksCategory.setParent(itemsCategory);
+            booksCategory.setName("Livres");
             categoryService.save(booksCategory);
+        }
+
+        Category moviesCategory = null;
+        if (itemsCategory!= null && !categoryService.categoryExists("Vidéos", itemsCategory.getId())) {
+            moviesCategory = new Category();
+            moviesCategory.setName("Vidéos");
+            moviesCategory.setParent(itemsCategory);
             categoryService.save(moviesCategory);
-            categoryService.save(oldCategory);
-            categoryService.save(newCategory);
+        }
 
+        Category frenchBooksCategory = null;
+        if (booksCategory!= null && !categoryService.categoryExists("Langue Française", booksCategory.getId())) {
+            frenchBooksCategory = new Category();
+            frenchBooksCategory.setName("Langue Française");
+            frenchBooksCategory.setParent(booksCategory);
+            categoryService.save(frenchBooksCategory);
+        }
 
-    	} catch (DataIntegrityViolationException e) {
-			/*
-			 * System.err.println("Catégorie déjà présente en base avec ce nom : " +
-			 * category.getName());
-			 */		}
-    	
+        Category englishBooksCategory = null;
+        if (booksCategory!= null && !categoryService.categoryExists("Langue Anglaise", booksCategory.getId())) {
+            englishBooksCategory = new Category();
+            englishBooksCategory.setName("Langue Anglaise");
+            englishBooksCategory.setParent(booksCategory);
+            categoryService.save(englishBooksCategory);
+        }
+
+        Category frenchMoviesCategory = null;
+        if (moviesCategory!= null && !categoryService.categoryExists("Langue Française", moviesCategory.getId())) {
+            frenchMoviesCategory = new Category();
+            frenchMoviesCategory.setName("Langue Française");
+            frenchMoviesCategory.setParent(moviesCategory);
+            categoryService.save(frenchMoviesCategory);
+        }
+
+        Category englishMoviesCategory = null;
+        if (moviesCategory!= null && !categoryService.categoryExists("Langue Anglaise", moviesCategory.getId())) {
+            englishMoviesCategory = new Category();
+            englishMoviesCategory.setParent(moviesCategory);
+            englishMoviesCategory.setName("Langue Anglaise");
+            categoryService.save(englishMoviesCategory);
+        }
+
+        } catch (DataIntegrityViolationException e) {
+            /*
+             * System.err.println("Catégorie déjà présente en base avec ce nom : " +
+             * category.getName());
+             */		}
+
         for (int i = 1; i <= 8; i++) {
             fetchData(i);
         }
     }
+
 
     @Async
     public void fetchData(int pageNumber) {
@@ -394,6 +428,7 @@ public class DatabaseSeeder {
             String publisher = json.getString("publisher");
             String isbn13 = json.getString("isbn13");
             String pages = json.getString("pages");
+            String language = json.getString("language");
             String year = json.getString("year");
             String description = json.getString("desc");
             String rating = json.getString("rating");
@@ -433,10 +468,6 @@ public class DatabaseSeeder {
                     .pages(pages)
                     .year(year)
                     .version(ThreadLocalRandom.current().nextInt(1, 5))
-                    .booksCategory(
-                    		Integer.parseInt(year) < 2017 ? 
-                    				this.categoryService.findById(4l) :
-                    				this.categoryService.findById(5l))
                     .build();
 
             // Créer et enregistrer un objet Item
@@ -449,6 +480,10 @@ public class DatabaseSeeder {
             		);
             book.setQuantityInStock(ThreadLocalRandom.current().nextInt(0, 333));
             book.setRating((float) Integer.parseInt(rating));
+            book.setLanguage(language);
+            book.setBooksCategory(language.equalsIgnoreCase("English") ? 
+            		this.categoryService.findById(5l) :
+            			this.categoryService.findById(4l));
             
             try {
             	bookService.save(book);

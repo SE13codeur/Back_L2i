@@ -9,19 +9,19 @@ import lombok.*;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"name", "parent_id"}))
 public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
     private String name;
 
     @ManyToOne
     @JoinColumn(name = "parent_id")
     private Category parent;
-    
+
     @OneToMany
     private List<Book> books;
 

@@ -40,7 +40,7 @@ public abstract class Item implements MeiliSearchModel {
     
     private short isNewCollection;
     
-    private String language = "English";
+    private String language;
     
     private int totalSales;
 
