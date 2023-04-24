@@ -17,11 +17,6 @@ public class ItemServiceImpl<T extends Item, ID> implements ItemService<T, ID> {
 
     @Autowired
     private ItemRepository<T, ID> itemRepository;
-
-    @PostConstruct
-    public void postConstruct() {
-        System.err.println("XXXXXXXXXXX ItemRepository: " + itemRepository);
-    }
     
     @Override
     public List<T> findAll() throws Exception {
