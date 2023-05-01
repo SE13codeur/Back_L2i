@@ -425,11 +425,6 @@ public class DatabaseSeeder {
             String year = json.getString("year");
             String description = json.getString("desc");
             String rating = json.getString("rating");
-            int maxLength = 777;
-
-            if (description.length() > maxLength) {
-                description = description.substring(0, maxLength - 3) + "...";
-            }
 
             String priceString = json.getString("price");
             String imageUrl = json.getString("image");
@@ -472,7 +467,7 @@ public class DatabaseSeeder {
             						1 : 0)
             		);
             book.setQuantityInStock(ThreadLocalRandom.current().nextInt(0, 333));
-            book.setRating((float) Integer.parseInt(rating));
+            book.setRating((float) Integer.parseInt(rating) == 0 ? 5 : (float) Integer.parseInt(rating));
             book.setLanguage(language);
             book.setBooksCategory(language.equalsIgnoreCase("English") ? 
             		this.categoryService.findById(5l) :
