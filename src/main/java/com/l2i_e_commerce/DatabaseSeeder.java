@@ -99,7 +99,7 @@ public class DatabaseSeeder {
                     sbJson.append(",");
                     sbJson.append("\"description\"");
                     sbJson.append(":");
-                    sbJson.append("\"" + currentBook.getDescription() + "\"");
+                    sbJson.append("\"" + currentBook.getDescription().replace("'", "\'") + "\"");
                     sbJson.append(",");
                     sbJson.append("\"regularPrice\"");
                     sbJson.append(":");
@@ -179,40 +179,40 @@ public class DatabaseSeeder {
                     Boolean firstCurrentAuthorTreated = false;
                     Set<Author> authors = authorRepository.findByBooks_Id(currentBook.getId());
                     for(Author currentAuthor :  authors) {
-                    	if (firstCurrentAuthorTreated) {
-                    		sbJson.append(",");
-                    	} else {
-                    		firstCurrentAuthorTreated = true;
-                    	}
-                    	sbJson.append("{");
-                    	sbJson.append("\"id\"");
-                    	sbJson.append(":");
-                    	sbJson.append(currentAuthor.getId());
-                    	sbJson.append(",");
-                    	sbJson.append("\"firstname\"");
-                    	sbJson.append(":");
-                    	sbJson.append("\"" + currentAuthor.getFirstName() + "\"");
-                    	sbJson.append(",");
-                    	sbJson.append("\"lastname\"");
-                    	sbJson.append(":");
-                    	sbJson.append("\"" + currentAuthor.getLastName() + "\"");
-                    	sbJson.append("}");
+                        if (firstCurrentAuthorTreated) {
+                            sbJson.append(",");
+                        } else {
+                            firstCurrentAuthorTreated = true;
+                        }
+                        sbJson.append("{");
+                        sbJson.append("\"id\"");
+                        sbJson.append(":");
+                        sbJson.append(currentAuthor.getId());
+                        sbJson.append(",");
+                        sbJson.append("\"firstname\"");
+                        sbJson.append(":");
+                        sbJson.append("\"" + currentAuthor.getFirstName() + "\"");
+                        sbJson.append(",");
+                        sbJson.append("\"lastname\"");
+                        sbJson.append(":");
+                        sbJson.append("\"" + currentAuthor.getLastName() + "\"");
+                        sbJson.append("}");
                     }
                     sbJson.append("]");
                     sbJson.append(",");
                     sbJson.append("\"editor\"");
                     sbJson.append(":");
                     Editor editor = editorRepository.findByBooks_Id(currentBook.getId());
-                    	
-                    	sbJson.append("{");
-                    	sbJson.append("\"id\"");
-                    	sbJson.append(":");
-                    	sbJson.append(editor.getId());
-                    	sbJson.append(",");
-                    	sbJson.append("\"name\"");
-                    	sbJson.append(":");
-                    	sbJson.append("\"" + editor.getName().replace("'","\'") + "\"");
-                    	sbJson.append("}");
+
+                    sbJson.append("{");
+                    sbJson.append("\"id\"");
+                    sbJson.append(":");
+                    sbJson.append(editor.getId());
+                    sbJson.append(",");
+                    sbJson.append("\"name\"");
+                    sbJson.append(":");
+                    sbJson.append("\"" + editor.getName().replace("'","\'") + "\"");
+                    sbJson.append("}");
                     sbJson.append("}");
 
                 }
@@ -220,7 +220,7 @@ public class DatabaseSeeder {
             sbJson.append("]");
             System.err.println("sbJson ajouté : " + sbJson.toString());
 
-			/*
+            /*
 			 * String jsonStringWithPrimaryKey = "{\"primaryKey\": \"id\", \"documents\": "
 			 * + sbJson.toString() + "}";
 			 */
@@ -230,8 +230,8 @@ public class DatabaseSeeder {
                     .uri(URI.create(this.meilisearchUrl))
                     .header("Content-Type", "application/json")
                     .header("Authorization", "Bearer " + this.meilisearchApiKey)
-					//.POST(HttpRequest.BodyPublishers.ofString(sbJson.toString()))					
-					.PUT(HttpRequest.BodyPublishers.ofString(sbJson.toString()))                 
+                    //.POST(HttpRequest.BodyPublishers.ofString(sbJson.toString()))
+                    .PUT(HttpRequest.BodyPublishers.ofString(sbJson.toString()))
                     .build();
 
             HttpResponse<String> httpResponse = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
@@ -284,19 +284,18 @@ public class DatabaseSeeder {
         }
     }
 
+//    @PostConstruct
+//    @Profile("dev")
+//    public void seedDatabaseForDevelopment() {
+//        seedDatabase();
+//        indexItemsInMeiliSearch();
+//    }
+
     @PostConstruct
-    @Profile("dev")
-    public void seedDatabaseForDevelopment() {
+    @Profile("prod") public void seedDatabaseForProduction() {
         seedDatabase();
         indexItemsInMeiliSearch();
     }
-
-	/*
-	 * @PostConstruct
-	 * 
-	 * @Profile("prod") public void seedDatabaseForProduction() { seedDatabase();
-	 * indexItemsInMeiliSearch(); }
-	 */
 
     @PostConstruct
     public void seedDatabase() {
@@ -401,17 +400,17 @@ public class DatabaseSeeder {
         client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(HttpResponse::body)
                 .thenApply(t -> {
-					try {
-						return parseBookDetails(t);
-					} catch (Exception e) {
-					}
-					return t;
-				})
+                    try {
+                        return parseBookDetails(t);
+                    } catch (Exception e) {
+                    }
+                    return t;
+                })
                 .join();
     }
 
     public String parseBookDetails(String responseBody) throws Exception {
-    	try {
+        try {
             JSONObject json = new JSONObject(responseBody);
 
          // Extraire les informations du livre à partir du JSON
@@ -464,17 +463,17 @@ public class DatabaseSeeder {
             book.setImageUrl(imageUrl);
             book.setDescription(description);
             book.setIsNewCollection((short) (Integer.parseInt(year) >= 2022 ?
-            						1 : 0)
-            		);
+                    1 : 0)
+            );
             book.setQuantityInStock(ThreadLocalRandom.current().nextInt(0, 333));
             book.setRating((float) Integer.parseInt(rating) == 0 ? 5 : (float) Integer.parseInt(rating));
             book.setLanguage(language);
-            book.setBooksCategory(language.equalsIgnoreCase("English") ? 
-            		this.categoryService.findById(5l) :
-            			this.categoryService.findById(4l));
+            book.setBooksCategory(language.equalsIgnoreCase("English") ?
+                    this.categoryService.findById(4l) :
+                    this.categoryService.findById(5l));
             
             try {
-            	bookService.save(book);
+                bookService.save(book);
             } catch (DataIntegrityViolationException e) {
             }
 
