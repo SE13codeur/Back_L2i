@@ -25,11 +25,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import java.util.stream.Collectors;
 
-import com.meilisearch.sdk.*;
-
 import org.springframework.transaction.annotation.Transactional;
-import java.time.Duration;
-
 
 
 @Component
@@ -191,11 +187,11 @@ public class DatabaseSeeder {
                     	sbJson.append(",");
                     	sbJson.append("\"firstname\"");
                     	sbJson.append(":");
-                    	sbJson.append("\"" + currentAuthor.getFirstName() + "\"");
+                    	sbJson.append("\"" + currentAuthor.getFirstname() + "\"");
                     	sbJson.append(",");
                     	sbJson.append("\"lastname\"");
                     	sbJson.append(":");
-                    	sbJson.append("\"" + currentAuthor.getLastName() + "\"");
+                    	sbJson.append("\"" + currentAuthor.getLastname() + "\"");
                     	sbJson.append("}");
                     }
                     sbJson.append("]");
@@ -231,29 +227,29 @@ public class DatabaseSeeder {
                     .header("Content-Type", "application/json")
                     .header("Authorization", "Bearer " + this.meilisearchApiKey)
 					//.POST(HttpRequest.BodyPublishers.ofString(sbJson.toString()))					
-					.PUT(HttpRequest.BodyPublishers.ofString(sbJson.toString()))                 
+					.PUT(HttpRequest.BodyPublishers.ofString(sbJson.toString()))
                     .build();
 
-            HttpResponse<String> httpResponse = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-            int statusCode = httpResponse.statusCode();
-            String responseBody = httpResponse.body();
-
-            if (statusCode >= 400) {
-  
-            } else {
-                if (statusCode == 202) {
-                    try {
-                        JSONObject jsonResponse = new JSONObject(responseBody);
-                        int taskUid = jsonResponse.getInt("taskUid");
-
-                        Thread.sleep(Duration.ofSeconds(2).toMillis());
-
-                        checkTaskStatus(this.meilisearchIndexUid, taskUid);
-                    } catch (JSONException | InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
+//            HttpResponse<String> httpResponse = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+//            int statusCode = httpResponse.statusCode();
+//            String responseBody = httpResponse.body();
+//
+//            if (statusCode >= 400) {
+//
+//            } else {
+//                if (statusCode == 202) {
+//                    try {
+//                        JSONObject jsonResponse = new JSONObject(responseBody);
+//                        int taskUid = jsonResponse.getInt("taskUid");
+//
+//                        Thread.sleep(Duration.ofSeconds(2).toMillis());
+//
+//                        checkTaskStatus(this.meilisearchIndexUid, taskUid);
+//                    } catch (JSONException | InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
         } catch (Exception e) {
             System.err.println("Erreur: " + e.getMessage());
         }
@@ -436,8 +432,8 @@ public class DatabaseSeeder {
                         String firstName = nameParts[0];
                         String lastName = nameParts.length > 1 ? nameParts[1] : "";
                         Author author = new Author();
-                        author.setFirstName(firstName);
-                        author.setLastName(lastName);
+                        author.setFirstname(firstName);
+                        author.setLastname(lastName);
                         return author;
                     })
                     .collect(Collectors.toSet());

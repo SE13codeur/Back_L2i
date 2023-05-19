@@ -1,15 +1,9 @@
 package com.l2i_e_commerce.service;
 
 import java.util.*;
-import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.repository.query.FluentQuery.FetchableFluentQuery;
 import org.springframework.stereotype.Service;
 
 import com.l2i_e_commerce.model.*;
@@ -45,8 +39,8 @@ public class BookServiceImpl implements BookService {
 		if (authors != null) {
 			Set<Author> updatedAuthors = new HashSet<>();
 			for (Author author : authors) {
-				List<Author> existingAuthors = authorRepository.findByFirstNameAndLastName(
-						author.getFirstName(), author.getLastName());
+				List<Author> existingAuthors = authorRepository.findByFirstnameAndLastname(
+						author.getFirstname(), author.getLastname());
 				if (!existingAuthors.isEmpty()) {
 					updatedAuthors.addAll(existingAuthors);
 				} else {

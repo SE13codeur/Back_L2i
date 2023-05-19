@@ -12,25 +12,24 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/items")
-public class GenericItemController<T extends Item> {
+public abstract class GenericItemController<T extends Item> {
 
     protected final ItemService itemService;
 
     @Autowired
-    public GenericItemController(ItemService itemService) {
+    protected GenericItemController(ItemService itemService) {
         this.itemService = itemService;
     }
 
-	@GetMapping
-    public ResponseEntity<List<T>> getAllItems() {
+    @PostMapping
+    protected ResponseEntity<T> createItem(@RequestBody T item) {
         try {
-            List<T> items = itemService.findAll();
-            return new ResponseEntity<>(items, HttpStatus.OK);
+            T createdItem = (T) itemService.save(item);
+            return new ResponseEntity<>(createdItem, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 
     @PutMapping("/{id}")
     public ResponseEntity<Item> update(@PathVariable String id, @RequestBody T item) throws Exception {
@@ -40,15 +39,4 @@ public class GenericItemController<T extends Item> {
         item.setMeiliSearchId(id);
         return ResponseEntity.ok(itemService.update(item));
     }
-
- }   
-	/*
-	 * @GetMapping("/in-stock") public ResponseEntity<List<T>> findItemsInStock() {
-	 * return ResponseEntity.ok(itemService.findItemsInStock()); }
-	 * 
-	 * @GetMapping("/most-sold") public ResponseEntity<List<T>> findMostSoldItems()
-	 * { return ResponseEntity.ok(itemService.findMostSoldItems()); }
-	 */
-
-
-
+}
