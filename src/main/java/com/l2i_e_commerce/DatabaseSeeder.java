@@ -20,6 +20,7 @@ import org.json.JSONObject;
 import java.math.BigDecimal;
 import java.net.*;
 import java.net.http.*;
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -67,169 +68,164 @@ public class DatabaseSeeder {
         this.itemService = itemService; 
     }
     
-    @Transactional
-    public void indexItemsInMeiliSearch() {
-        try {
-
-            List<Book> books = this.bookService.findAll();
-            System.err.println("NBR ITEMS MYSQL " + books.size());
-            StringBuffer sbJson = new StringBuffer();
-            sbJson.append("[");
-            Boolean isFirstItemTreated = false;
-            for(Item item : books) {
-                if (!isFirstItemTreated) {
-                    isFirstItemTreated = true;
-                } else {
-                    sbJson.append(",");
-                }
-                if (item instanceof Book) {
-                    Book currentBook = (Book) item;
-                    sbJson.append("{");
-                    sbJson.append("\"id\"");
-                    sbJson.append(":");
-                    sbJson.append(currentBook.getId());
-                    sbJson.append(",");
-                    sbJson.append("\"imageUrl\"");
-                    sbJson.append(":");
-                    sbJson.append("\"" + currentBook.getImageUrl() + "\"");
-                    sbJson.append(",");
-                    sbJson.append("\"description\"");
-                    sbJson.append(":");
-                    sbJson.append("\"" + currentBook.getDescription() + "\"");
-                    sbJson.append(",");
-                    sbJson.append("\"regularPrice\"");
-                    sbJson.append(":");
-                    sbJson.append(currentBook.getRegularPrice());
-                    sbJson.append(",");
-                    sbJson.append("\"quantityInStock\"");
-                    sbJson.append(":");
-                    sbJson.append(currentBook.getQuantityInStock());
-                    sbJson.append(",");
-                    sbJson.append("\"rating\"");
-                    sbJson.append(":");
-                    sbJson.append(currentBook.getRating());
-                    sbJson.append(",");
-                    sbJson.append("\"isNewCollection\"");
-                    sbJson.append(":");
-                    sbJson.append(currentBook.getIsNewCollection() == 1 ? true : false);
-                    sbJson.append(",");
-                    sbJson.append("\"language\"");
-                    sbJson.append(":");
-                    sbJson.append("\"" + currentBook.getLanguage() + "\"");
-                    sbJson.append(",");
-                    sbJson.append("\"totalSales\"");
-                    sbJson.append(":");
-                    sbJson.append("\"" + currentBook.getTotalSales() + "\"");
-                    sbJson.append(",");
-                    sbJson.append("\"isbn13\"");
-                    sbJson.append(":");
-                    sbJson.append("\"" + currentBook.getIsbn13() + "\"");
-                    sbJson.append(",");
-                    sbJson.append("\"title\"");
-                    sbJson.append(":");
-                    sbJson.append("\"" + currentBook.getTitle() + "\"");
-                    sbJson.append(",");
-                    sbJson.append("\"subtitle\"");
-                    sbJson.append(":");
-                    sbJson.append("\"" + currentBook.getSubtitle() + "\"");
-                    sbJson.append(",");
-                    sbJson.append("\"pages\"");
-                    sbJson.append(":");
-                    sbJson.append("\"" + currentBook.getPages() + "\"");
-                    sbJson.append(",");
-                    sbJson.append("\"year\"");
-                    sbJson.append(":");
-                    sbJson.append("\"" + currentBook.getYear() + "\"");
-                    sbJson.append(",");
-                    sbJson.append("\"version\"");
-                    sbJson.append(":");
-                    sbJson.append(currentBook.getVersion());
-                    sbJson.append(",");
-                    sbJson.append("\"isInStock\"");
-                    sbJson.append(":");
-                    sbJson.append(currentBook.getIsInStock() == 1 ? true : false);
-                    sbJson.append(",");
-                    sbJson.append("\"meiliSearchId\"");
-                    sbJson.append(":");
-                    sbJson.append("\"" + currentBook.getMeiliSearchId() + "\"");
-                    sbJson.append(",");
-                    sbJson.append("\"category\"");
-                    sbJson.append(":");
-                    sbJson.append("{");
-                    sbJson.append("\"id\"");
-                    sbJson.append(":");
-                    sbJson.append("\"" + currentBook.getBooksCategory().getId() + "\"");
-                    sbJson.append(",");
-                    sbJson.append("\"name\"");
-                    sbJson.append(":");
-                    sbJson.append("\"" + currentBook.getBooksCategory().getName() + "\"");
-                    sbJson.append(",");
-                    sbJson.append("\"parent_id\"");
-                    sbJson.append(":");
-                    sbJson.append("\"" + currentBook.getBooksCategory().getParent().getId() + "\"");
-                    sbJson.append("}");
-                    sbJson.append(",");
-                    sbJson.append("\"authors\"");
-                    sbJson.append(":");
-                    sbJson.append("[");
-                    Boolean firstCurrentAuthorTreated = false;
-                    Set<Author> authors = authorRepository.findByBooks_Id(currentBook.getId());
-                    for(Author currentAuthor :  authors) {
-                    	if (firstCurrentAuthorTreated) {
-                    		sbJson.append(",");
-                    	} else {
-                    		firstCurrentAuthorTreated = true;
-                    	}
-                    	sbJson.append("{");
-                    	sbJson.append("\"id\"");
-                    	sbJson.append(":");
-                    	sbJson.append(currentAuthor.getId());
-                    	sbJson.append(",");
-                    	sbJson.append("\"firstname\"");
-                    	sbJson.append(":");
-                    	sbJson.append("\"" + currentAuthor.getFirstname() + "\"");
-                    	sbJson.append(",");
-                    	sbJson.append("\"lastname\"");
-                    	sbJson.append(":");
-                    	sbJson.append("\"" + currentAuthor.getLastname() + "\"");
-                    	sbJson.append("}");
-                    }
-                    sbJson.append("]");
-                    sbJson.append(",");
-                    sbJson.append("\"editor\"");
-                    sbJson.append(":");
-                    Editor editor = editorRepository.findByBooks_Id(currentBook.getId());
-                    	
-                    	sbJson.append("{");
-                    	sbJson.append("\"id\"");
-                    	sbJson.append(":");
-                    	sbJson.append(editor.getId());
-                    	sbJson.append(",");
-                    	sbJson.append("\"name\"");
-                    	sbJson.append(":");
-                    	sbJson.append("\"" + editor.getName().replace("'","\'") + "\"");
-                    	sbJson.append("}");
-                    sbJson.append("}");
-
-                }
-            }
-            sbJson.append("]");
-            System.err.println("sbJson ajouté : " + sbJson.toString());
-
-			/*
-			 * String jsonStringWithPrimaryKey = "{\"primaryKey\": \"id\", \"documents\": "
-			 * + sbJson.toString() + "}";
-			 */
-
-            HttpClient client = HttpClient.newHttpClient();
-            HttpRequest httpRequest = HttpRequest.newBuilder()
-                    .uri(URI.create(this.meilisearchUrl))
-                    .header("Content-Type", "application/json")
-                    .header("Authorization", "Bearer " + this.meilisearchApiKey)
-					//.POST(HttpRequest.BodyPublishers.ofString(sbJson.toString()))					
-					.PUT(HttpRequest.BodyPublishers.ofString(sbJson.toString()))
-                    .build();
-
+//    @Transactional
+//    public void indexItemsInMeiliSearch() {
+//        try {
+//
+//            List<Book> books = this.bookService.findAll();
+//            System.err.println("NBR ITEMS MYSQL " + books.size());
+//            StringBuffer sbJson = new StringBuffer();
+//            sbJson.append("[");
+//            Boolean isFirstItemTreated = false;
+//            for(Item item : books) {
+//                if (!isFirstItemTreated) {
+//                    isFirstItemTreated = true;
+//                } else {
+//                    sbJson.append(",");
+//                }
+//                if (item instanceof Book) {
+//                    Book currentBook = (Book) item;
+//                    sbJson.append("{");
+//                    sbJson.append("\"id\"");
+//                    sbJson.append(":");
+//                    sbJson.append(currentBook.getId());
+//                    sbJson.append(",");
+//                    sbJson.append("\"imageUrl\"");
+//                    sbJson.append(":");
+//                    sbJson.append("\"" + currentBook.getImageUrl() + "\"");
+//                    sbJson.append(",");
+//                    sbJson.append("\"description\"");
+//                    sbJson.append(":");
+//                    sbJson.append("\"" + currentBook.getDescription() + "\"");
+//                    sbJson.append(",");
+//                    sbJson.append("\"regularPrice\"");
+//                    sbJson.append(":");
+//                    sbJson.append(currentBook.getRegularPrice());
+//                    sbJson.append(",");
+//                    sbJson.append("\"quantityInStock\"");
+//                    sbJson.append(":");
+//                    sbJson.append(currentBook.getQuantityInStock());
+//                    sbJson.append(",");
+//                    sbJson.append("\"rating\"");
+//                    sbJson.append(":");
+//                    sbJson.append(currentBook.getRating());
+//                    sbJson.append(",");
+//                    sbJson.append("\"isNewCollection\"");
+//                    sbJson.append(":");
+//                    sbJson.append(currentBook.getIsNewCollection() == 1 ? true : false);
+//                    sbJson.append(",");
+//                    sbJson.append("\"language\"");
+//                    sbJson.append(":");
+//                    sbJson.append("\"" + currentBook.getLanguage() + "\"");
+//                    sbJson.append(",");
+//                    sbJson.append("\"totalSales\"");
+//                    sbJson.append(":");
+//                    sbJson.append("\"" + currentBook.getTotalSales() + "\"");
+//                    sbJson.append(",");
+//                    sbJson.append("\"isbn13\"");
+//                    sbJson.append(":");
+//                    sbJson.append("\"" + currentBook.getIsbn13() + "\"");
+//                    sbJson.append(",");
+//                    sbJson.append("\"title\"");
+//                    sbJson.append(":");
+//                    sbJson.append("\"" + currentBook.getTitle() + "\"");
+//                    sbJson.append(",");
+//                    sbJson.append("\"subtitle\"");
+//                    sbJson.append(":");
+//                    sbJson.append("\"" + currentBook.getSubtitle() + "\"");
+//                    sbJson.append(",");
+//                    sbJson.append("\"pages\"");
+//                    sbJson.append(":");
+//                    sbJson.append("\"" + currentBook.getPages() + "\"");
+//                    sbJson.append(",");
+//                    sbJson.append("\"year\"");
+//                    sbJson.append(":");
+//                    sbJson.append("\"" + currentBook.getYear() + "\"");
+//                    sbJson.append(",");
+//                    sbJson.append("\"version\"");
+//                    sbJson.append(":");
+//                    sbJson.append(currentBook.getVersion());
+//                    sbJson.append(",");
+//                    sbJson.append("\"isInStock\"");
+//                    sbJson.append(":");
+//                    sbJson.append(currentBook.getIsInStock() == 1 ? true : false);
+//                    sbJson.append(",");
+//                    sbJson.append("\"meiliSearchId\"");
+//                    sbJson.append(":");
+//                    sbJson.append("\"" + currentBook.getMeiliSearchId() + "\"");
+//                    sbJson.append(",");
+//                    sbJson.append("\"category\"");
+//                    sbJson.append(":");
+//                    sbJson.append("{");
+//                    sbJson.append("\"id\"");
+//                    sbJson.append(":");
+//                    sbJson.append("\"" + currentBook.getBooksCategory().getId() + "\"");
+//                    sbJson.append(",");
+//                    sbJson.append("\"name\"");
+//                    sbJson.append(":");
+//                    sbJson.append("\"" + currentBook.getBooksCategory().getName() + "\"");
+//                    sbJson.append(",");
+//                    sbJson.append("\"parent_id\"");
+//                    sbJson.append(":");
+//                    sbJson.append("\"" + currentBook.getBooksCategory().getParent().getId() + "\"");
+//                    sbJson.append("}");
+//                    sbJson.append(",");
+//                    sbJson.append("\"authors\"");
+//                    sbJson.append(":");
+//                    sbJson.append("[");
+//                    Boolean firstCurrentAuthorTreated = false;
+//                    Set<Author> authors = authorRepository.findByBooks_Id(currentBook.getId());
+//                    for(Author currentAuthor :  authors) {
+//                    	if (firstCurrentAuthorTreated) {
+//                    		sbJson.append(",");
+//                    	} else {
+//                    		firstCurrentAuthorTreated = true;
+//                    	}
+//                    	sbJson.append("{");
+//                    	sbJson.append("\"id\"");
+//                    	sbJson.append(":");
+//                    	sbJson.append(currentAuthor.getId());
+//                    	sbJson.append(",");
+//                    	sbJson.append("\"firstname\"");
+//                    	sbJson.append(":");
+//                    	sbJson.append("\"" + currentAuthor.getFirstname() + "\"");
+//                    	sbJson.append(",");
+//                    	sbJson.append("\"lastname\"");
+//                    	sbJson.append(":");
+//                    	sbJson.append("\"" + currentAuthor.getLastname() + "\"");
+//                    	sbJson.append("}");
+//                    }
+//                    sbJson.append("]");
+//                    sbJson.append(",");
+//                    sbJson.append("\"editor\"");
+//                    sbJson.append(":");
+//                    Editor editor = editorRepository.findByBooks_Id(currentBook.getId());
+//
+//                    	sbJson.append("{");
+//                    	sbJson.append("\"id\"");
+//                    	sbJson.append(":");
+//                    	sbJson.append(editor.getId());
+//                    	sbJson.append(",");
+//                    	sbJson.append("\"name\"");
+//                    	sbJson.append(":");
+//                    	sbJson.append("\"" + editor.getName().replace("'","\'") + "\"");
+//                    	sbJson.append("}");
+//                    sbJson.append("}");
+//
+//                }
+//            }
+//            sbJson.append("]");
+//            System.err.println("sbJson ajouté : " + sbJson.toString());
+//
+//            HttpClient client = HttpClient.newHttpClient();
+//            HttpRequest httpRequest = HttpRequest.newBuilder()
+//                    .uri(URI.create(this.meilisearchUrl))
+//                    .header("Content-Type", "application/json")
+//                    .header("Authorization", "Bearer " + this.meilisearchApiKey)
+//					.POST(HttpRequest.BodyPublishers.ofString(sbJson.toString()))
+//					//.PUT(HttpRequest.BodyPublishers.ofString(sbJson.toString()))
+//                    .build();
+//
 //            HttpResponse<String> httpResponse = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
 //            int statusCode = httpResponse.statusCode();
 //            String responseBody = httpResponse.body();
@@ -250,10 +246,10 @@ public class DatabaseSeeder {
 //                    }
 //                }
 //            }
-        } catch (Exception e) {
-            System.err.println("Erreur: " + e.getMessage());
-        }
-    }
+//        } catch (Exception e) {
+//            System.err.println("Erreur: " + e.getMessage());
+//        }
+//    }
 
 
     public void checkTaskStatus(String indexUid, int taskUid) {
@@ -280,12 +276,12 @@ public class DatabaseSeeder {
         }
     }
 
-    @PostConstruct
-    @Profile("dev")
-    public void seedDatabaseForDevelopment() {
-        seedDatabase();
-        indexItemsInMeiliSearch();
-    }
+//    @PostConstruct
+//    @Profile("dev")
+//    public void seedDatabaseForDevelopment() {
+//        seedDatabase();
+//        indexItemsInMeiliSearch();
+//    }
 
 	/*
 	 * @PostConstruct

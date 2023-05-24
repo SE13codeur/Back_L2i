@@ -24,10 +24,10 @@ public class Book extends Item {
     private String isbn13;
 
     private String title;
-    
+
     private String subtitle;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "book_author",
         joinColumns = @JoinColumn(name = "book_id"),
@@ -42,7 +42,7 @@ public class Book extends Item {
     @JsonIgnore
     @ManyToMany(mappedBy = "books")
     private Set<Sale> bookSales;
-    
+
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category booksCategory;

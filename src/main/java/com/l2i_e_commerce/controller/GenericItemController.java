@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 @RestController
-@RequestMapping("/api/items")
+@RequestMapping("/items")
 public abstract class GenericItemController<T extends Item> {
 
     protected final ItemService itemService;

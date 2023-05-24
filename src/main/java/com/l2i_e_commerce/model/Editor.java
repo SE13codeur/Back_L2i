@@ -1,9 +1,12 @@
 package com.l2i_e_commerce.model;
 
-import java.util.Set;
-
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.l2i_e_commerce.model.Book;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.Set;
 
 @Entity
 @Table(name = "editors")
@@ -19,9 +22,10 @@ public class Editor {
     @Column(unique = true)
     private String name;
 
+    @JsonBackReference
     @OneToMany(mappedBy = "editor")
     private Set<Book> books;
-    
+
     public Editor(String name) {
         this.name = name;
     }

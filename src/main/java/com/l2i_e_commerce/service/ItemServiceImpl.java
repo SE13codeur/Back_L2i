@@ -3,10 +3,8 @@ package com.l2i_e_commerce.service;
 import com.l2i_e_commerce.dao.ItemRepository;
 import com.l2i_e_commerce.model.Item;
 
-import jakarta.annotation.PostConstruct;
-import lombok.*;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,11 +15,6 @@ public class ItemServiceImpl<T extends Item, ID> implements ItemService<T, ID> {
 
     @Autowired
     private ItemRepository<T, ID> itemRepository;
-    
-    @Override
-    public List<T> findAll() throws Exception {
-        return itemRepository.findAll();
-    }
 
     @Override
     public Optional<T> findById(ID id) throws Exception {
