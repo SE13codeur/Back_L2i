@@ -13,5 +13,9 @@ public interface BookService extends ItemService<Book, Long>{
 
     Optional<Book> findById(Long id);
 
+    void deleteById(Long id);
+
+    Book save(Book book);
+
 }
 

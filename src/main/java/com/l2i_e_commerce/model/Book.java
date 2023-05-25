@@ -27,11 +27,12 @@ public class Book extends Item {
 
     private String subtitle;
 
+    @EqualsAndHashCode.Exclude
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-        name = "book_author",
-        joinColumns = @JoinColumn(name = "book_id"),
-        inverseJoinColumns = @JoinColumn(name = "author_id")
+            name = "book_author",
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "author_id")
     )
     private Set<Author> authors;
 
@@ -45,7 +46,7 @@ public class Book extends Item {
 
     @ManyToOne
     @JoinColumn(name = "category_id")
-    private Category booksCategory;
+    private Category category;
 
     private String pages;
     private String year;

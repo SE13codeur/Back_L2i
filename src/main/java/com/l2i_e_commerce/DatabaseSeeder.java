@@ -461,7 +461,7 @@ public class DatabaseSeeder {
             book.setQuantityInStock(ThreadLocalRandom.current().nextInt(0, 333));
             book.setRating((float) Integer.parseInt(rating) == 0 ? 5 : (float) Integer.parseInt(rating));
             book.setLanguage(language);
-            book.setBooksCategory(language.equalsIgnoreCase("English") ? 
+            book.setCategory(language.equalsIgnoreCase("English") ?
             		this.categoryService.findById(5l) :
             			this.categoryService.findById(4l));
             

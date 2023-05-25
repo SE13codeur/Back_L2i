@@ -26,8 +26,7 @@ public class BookServiceImpl implements BookService {
 	private AuthorRepository authorRepository;
 	
 
-	@Override
-	public Book save(Book book) {
+	public Book saveEditor(Book book) {
 		Editor editor = book.getEditor();
 		if (editor != null) {
 			Editor existingEditor = editorRepository.findByName(editor.getName());
@@ -75,6 +74,16 @@ public class BookServiceImpl implements BookService {
 	@Override
 	public List<Book> findAll() {
 		return bookRepository.findAll();
+	}
+
+	@Override
+	public void deleteById(Long id) {
+		bookRepository.deleteById(id);
+	}
+
+	@Override
+	public Book save(Book book) {
+		return bookRepository.save(book);
 	}
 
 

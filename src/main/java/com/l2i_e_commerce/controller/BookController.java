@@ -51,6 +51,4 @@ public class BookController {
 		Optional<Book> book = bookService.findById(id);
 		return new ResponseEntity<>(book, HttpStatus.OK);
 	}
-
-
 }
