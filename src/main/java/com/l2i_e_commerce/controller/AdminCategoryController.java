@@ -13,8 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/categories")
-public class CategoryController {
+@RequestMapping("/admin/categories")
+public class AdminCategoryController {
     @Autowired
     private CategoryService categoryService;
 
@@ -45,5 +45,11 @@ public class CategoryController {
 
         return ResponseEntity.ok(booksByCategory);
     }
+
+    @GetMapping
+    public List<Category> getAllCategories() {
+        return categoryService.findAll();
+    }
+
 }
 
