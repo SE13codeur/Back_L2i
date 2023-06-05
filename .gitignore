@@ -70,4 +70,5 @@ js/
 
 # For password of DB
 **/application-prod.properties
+**/application-dev.properties
 
