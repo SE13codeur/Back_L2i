@@ -69,5 +69,5 @@ HELP.md
 js/
 
 # For password of DB
-**/application.properties
+**/application-prod.properties
 
