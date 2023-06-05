@@ -51,21 +51,25 @@ public class DatabaseSeeder {
 
     @Autowired
     private AuthorRepository authorRepository;
-    
+
     @Autowired
     private EditorRepository editorRepository;
+
+    @Autowired
+    TVARepository tvaRepository;
 
     @Autowired
     private CategoryService categoryService;
 
     @Autowired
     public DatabaseSeeder(ItemService<Book, ?> itemService, BookService bookService, 
-                          AuthorRepository authorRepository, EditorRepository editorRepository, CategoryService categoryService) {
+                          AuthorRepository authorRepository, EditorRepository editorRepository, CategoryService categoryService, TVARepository tvaRepository) {
         this.bookService = bookService;
         this.authorRepository = authorRepository;
         this.editorRepository = editorRepository;
         this.categoryService = categoryService;
-        this.itemService = itemService; 
+        this.itemService = itemService;
+        this.tvaRepository = tvaRepository;
     }
     
 //    @Transactional
@@ -292,6 +296,20 @@ public class DatabaseSeeder {
 
     @PostConstruct
     public void seedDatabase() {
+        try {
+            TVA tva20 = new TVA("", "TVA20", 0.2, new ArrayList<>());
+            TVA tva10 = new TVA("", "TVA10", 0.1, new ArrayList<>());
+            TVA tva5 = new TVA("", "TVA5.5", 0.055, new ArrayList<>());
+            TVA tva2 = new TVA("", "TVA2.1", 0.021, new ArrayList<>());
+
+            TVARepository.save(tva20);
+            TVARepository.save(tva10);
+            TVARepository.save(tva5);
+            TVARepository.save(tva2);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
         try {
         Category itemsCategory = null;
         if (!categoryService.categoryExists("Articles", null)) {

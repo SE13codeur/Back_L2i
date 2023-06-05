@@ -13,13 +13,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Data
 @Entity
 @AllArgsConstructor
-@NoArgsConstructor
 public class User {
 
     @Id
@@ -50,5 +48,8 @@ public class User {
         this.password = password;
         this.addresses = addresses;
     }
-}
 
+    public User() {
+
+    }
+}

@@ -1,5 +1,6 @@
 package com.l2i_e_commerce.model;
 
+import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -39,6 +40,13 @@ public class Book extends Item {
     @ManyToOne
     @JoinColumn(name = "editor_id")
     private Editor editor;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
+    private List<OrderLine> orderLines;
+
+    @ManyToOne
+    TVA tva;
 
     @JsonIgnore
     @ManyToMany(mappedBy = "books")

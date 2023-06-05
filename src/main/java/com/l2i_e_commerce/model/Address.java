@@ -11,30 +11,35 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 
-@AllArgsConstructor
 @Data
 @Entity
-@RequiredArgsConstructor
-@NoArgsConstructor
+@AllArgsConstructor
 public class Address {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long id;
+
 	@NonNull
 	String street;
+
 	@NonNull
 	String zip;
+
 	@NonNull
 	String city;
+
 	@NonNull
 	String country;
+
 	@NonNull
 	@JsonIgnoreProperties("addresses")
 	@ManyToMany(mappedBy = "addresses")
 	List<User> users;
+
+	public Address() {
+
+	}
 }

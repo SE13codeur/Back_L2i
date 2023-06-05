@@ -2,6 +2,7 @@ package com.l2i_e_commerce.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.boot.context.properties.bind.DefaultValue;
@@ -33,7 +34,6 @@ public abstract class Item implements MeiliSearchModel {
     
     private int quantityInStock;
     
-    
     private short isInStock = 1;
     
     private float rating;
@@ -43,6 +43,12 @@ public abstract class Item implements MeiliSearchModel {
     private String language;
     
     private int totalSales;
+
+    @ManyToOne
+    TVA tva;
+
+    @OneToMany(mappedBy = "book")
+    List<OrderLine> orderLines;
 
     @JsonIgnore
     private LocalDateTime createdAt;
