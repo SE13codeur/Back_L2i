@@ -1,3 +1,4 @@
+/*
 package com.l2i_e_commerce.service;
 
 import com.l2i_e_commerce.model.Item;
@@ -65,3 +66,4 @@ public class MeiliSearchGenericServiceImpl<T extends Item> implements MeiliSearc
         meiliSearchIndex.deleteDocument(id);
     }
 }
+*/

@@ -1,4 +1,4 @@
-package com.l2i_e_commerce.service;
+/*package com.l2i_e_commerce.service;
 
 import com.l2i_e_commerce.model.Item;
 
@@ -11,4 +11,4 @@ public interface MeiliSearchGenericService<T extends Item> {
     T save(T item) throws Exception;
     T update(T item) throws Exception;
     void deleteById(String id) throws Exception;
-}
+}*/

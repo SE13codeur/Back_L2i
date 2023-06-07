@@ -7,7 +7,6 @@ import com.l2i_e_commerce.service.*;
 import jakarta.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.scheduling.annotation.Async;
@@ -20,28 +19,24 @@ import org.json.JSONObject;
 import java.math.BigDecimal;
 import java.net.*;
 import java.net.http.*;
-import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 import java.util.stream.Collectors;
-
-import org.springframework.transaction.annotation.Transactional;
 
 
 @Component
 @EnableAsync
 public class DatabaseSeeder {
 
-    @Value("${meilisearch.url}")
+   /* @Value("${meilisearch.url}")
     private String meilisearchUrl;
 
     @Value("${meilisearch.apikey}")
     private String meilisearchApiKey;
 
     @Value("${meilisearch.indexUid}")
-    private String meilisearchIndexUid;
-
+    private String meilisearchIndexUid;*/
 
     @Autowired
     private final ItemService<Book, ?> itemService;
@@ -56,22 +51,251 @@ public class DatabaseSeeder {
     private EditorRepository editorRepository;
 
     @Autowired
-    TVARepository tvaRepository;
+    private TVAService tvaService;
 
     @Autowired
     private CategoryService categoryService;
 
     @Autowired
-    public DatabaseSeeder(ItemService<Book, ?> itemService, BookService bookService, 
-                          AuthorRepository authorRepository, EditorRepository editorRepository, CategoryService categoryService, TVARepository tvaRepository) {
+    public DatabaseSeeder(ItemService<Book, ?> itemService, BookService bookService,
+                          AuthorRepository authorRepository, EditorRepository editorRepository, CategoryService categoryService, TVAService tvaService) {
         this.bookService = bookService;
         this.authorRepository = authorRepository;
         this.editorRepository = editorRepository;
         this.categoryService = categoryService;
         this.itemService = itemService;
-        this.tvaRepository = tvaRepository;
+        this.tvaService = tvaService;
     }
-    
+
+//    @PostConstruct
+//    @Profile("dev")
+//    public void seedDatabaseForDevelopment() {
+//        seedDatabase();
+//        indexItemsInMeiliSearch();
+//    }
+
+    @PostConstruct
+    @Profile("prod")
+    public void seedDatabaseForProduction() {
+        seedDatabase();
+    }
+
+    public void seedDatabase() {
+        System.err.println("Entrée du seeder");
+        try {
+            TVA tva20 = new TVA();
+            tva20.setTvaType("tva20");
+            tva20.setTvaRate(0.2);
+
+            TVA tva10 = new TVA();
+            tva10.setTvaType("tva10");
+            tva10.setTvaRate(0.1);
+
+            TVA tva5 = new TVA();
+            tva5.setTvaType("tva5.5");
+            tva5.setTvaRate(0.055);
+
+            TVA tva2 = new TVA();
+            tva2.setTvaType("tva2.1");
+            tva2.setTvaRate(0.021);
+
+
+            this.tvaService.save(tva20);
+            this.tvaService.save(tva10);
+            this.tvaService.save(tva5);
+            this.tvaService.save(tva2);
+        } catch (Exception ex) {
+            System.err.println("Erreur de la sauvegarde de la TVA");
+        }
+
+        try {
+            Category itemsCategory = null;
+            if (!categoryService.categoryExists("Articles", null)) {
+                itemsCategory = new Category();
+                itemsCategory.setName("Articles");
+                categoryService.save(itemsCategory);
+            }
+
+            Category booksCategory = null;
+            if (itemsCategory != null && !categoryService.categoryExists("Livres", itemsCategory.getId())) {
+                booksCategory = new Category();
+                booksCategory.setParent(itemsCategory);
+                booksCategory.setName("Livres");
+                categoryService.save(booksCategory);
+            }
+
+            Category moviesCategory = null;
+            if (itemsCategory != null && !categoryService.categoryExists("Vidéos", itemsCategory.getId())) {
+                moviesCategory = new Category();
+                moviesCategory.setName("Vidéos");
+                moviesCategory.setParent(itemsCategory);
+                categoryService.save(moviesCategory);
+            }
+
+            Category frenchBooksCategory = null;
+            if (booksCategory != null && !categoryService.categoryExists("Langue Française", booksCategory.getId())) {
+                frenchBooksCategory = new Category();
+                frenchBooksCategory.setName("Langue Française");
+                frenchBooksCategory.setParent(booksCategory);
+                categoryService.save(frenchBooksCategory);
+            }
+
+            Category englishBooksCategory = null;
+            if (booksCategory != null && !categoryService.categoryExists("Langue Anglaise", booksCategory.getId())) {
+                englishBooksCategory = new Category();
+                englishBooksCategory.setName("Langue Anglaise");
+                englishBooksCategory.setParent(booksCategory);
+                categoryService.save(englishBooksCategory);
+            }
+
+            Category frenchMoviesCategory = null;
+            if (moviesCategory != null && !categoryService.categoryExists("Langue Française", moviesCategory.getId())) {
+                frenchMoviesCategory = new Category();
+                frenchMoviesCategory.setName("Langue Française");
+                frenchMoviesCategory.setParent(moviesCategory);
+                categoryService.save(frenchMoviesCategory);
+            }
+
+            Category englishMoviesCategory = null;
+            if (moviesCategory != null && !categoryService.categoryExists("Langue Anglaise", moviesCategory.getId())) {
+                englishMoviesCategory = new Category();
+                englishMoviesCategory.setParent(moviesCategory);
+                englishMoviesCategory.setName("Langue Anglaise");
+                categoryService.save(englishMoviesCategory);
+            }
+
+        } catch (DataIntegrityViolationException e) {
+        }
+
+        for (int i = 1; i <= 8; i++) {
+            fetchData(i);
+        }
+    }
+
+
+    @Async
+    public void fetchData(int pageNumber) {
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("https://api.itbook.store/1.0/search/mongodb/" + pageNumber))
+                .build();
+
+        client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(HttpResponse::body)
+                .thenApply(this::parse);
+    }
+
+    public String parse(String responseBody) {
+        try {
+            JSONObject json = new JSONObject(responseBody);
+            JSONArray books = json.getJSONArray("books");
+            for (int i = 0; i < books.length(); i++) {
+                JSONObject book = books.getJSONObject(i);
+                String isbn13 = book.getString("isbn13");
+                getBookDetails(isbn13);
+            }
+        } catch (JSONException e) {
+
+        }
+        return null;
+    }
+
+    public void getBookDetails(String isbn13) {
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("https://api.itbook.store/1.0/books/" + isbn13))
+                .build();
+
+        client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(HttpResponse::body)
+                .thenApply(t -> {
+                    try {
+                        return parseBookDetails(t);
+                    } catch (Exception e) {
+                    }
+                    return t;
+                })
+                .join();
+    }
+
+    public String parseBookDetails(String responseBody) throws Exception {
+        try {
+            JSONObject json = new JSONObject(responseBody);
+
+            // Extraire les informations du livre à partir du JSON
+            String title = json.getString("title");
+            String subtitle = json.getString("subtitle");
+            String authors = json.getString("authors");
+            String publisher = json.getString("publisher");
+            String isbn13 = json.getString("isbn13");
+            String pages = json.getString("pages");
+            String language = json.getString("language");
+            String year = json.getString("year");
+            String description = json.getString("desc");
+            String rating = json.getString("rating");
+
+            String priceString = json.getString("price");
+            String imageUrl = json.getString("image");
+
+            Set<Author> authorsSplitString = Arrays.stream(authors.split(","))
+                    .map(String::trim)
+                    .map(fullName -> {
+                        String[] nameParts = fullName.split(" ");
+                        String firstName = nameParts[0];
+                        String lastName = nameParts.length > 1 ? nameParts[1] : "";
+                        Author author = new Author();
+                        author.setFirstname(firstName);
+                        author.setLastname(lastName);
+                        return author;
+                    })
+                    .collect(Collectors.toSet());
+
+            // Créer un objet Editor à partir du nom de l'éditeur
+            Editor editor = new Editor();
+            editor.setName(publisher);
+
+            // Créer et enregistrer un objet Book
+            Book book = Book.builder()
+                    .title(title)
+                    .subtitle(subtitle)
+                    .authors(authorsSplitString)
+                    .editor(editor)
+                    .isbn13(isbn13)
+                    .pages(pages)
+                    .year(year)
+                    .version(ThreadLocalRandom.current().nextInt(1, 5))
+                    .build();
+
+            // Créer et enregistrer un objet Item
+            BigDecimal price = new BigDecimal(priceString.replace("$", "").trim());
+            book.setRegularPrice(price);
+            book.setImageUrl(imageUrl);
+            book.setDescription(description);
+            book.setIsNewCollection((short) (Integer.parseInt(year) >= 2022 ?
+                    1 : 0)
+            );
+            book.setQuantityInStock(ThreadLocalRandom.current().nextInt(0, 333));
+            book.setRating((float) Integer.parseInt(rating) == 0 ? 5 : (float) Integer.parseInt(rating));
+            book.setLanguage(language);
+            book.setCategory(language.equalsIgnoreCase("English") ?
+                    this.categoryService.findById(4l) :
+                    this.categoryService.findById(5l));
+            book.setTva(this.tvaService.findById(3l));
+
+            try {
+                bookService.save(book);
+            } catch (DataIntegrityViolationException e) {
+            }
+
+
+        } catch (JSONException e) {
+
+        }
+        return null;
+    }
+}
+
+
 //    @Transactional
 //    public void indexItemsInMeiliSearch() {
 //        try {
@@ -256,6 +480,7 @@ public class DatabaseSeeder {
 //    }
 
 
+/*
     public void checkTaskStatus(String indexUid, int taskUid) {
         try {
             String taskUrl = this.meilisearchUrl + "/indexes/" + indexUid + "/tasks/" + taskUid;
@@ -279,224 +504,6 @@ public class DatabaseSeeder {
             System.err.println("Error checking task status: " + e.getMessage());
         }
     }
-
-//    @PostConstruct
-//    @Profile("dev")
-//    public void seedDatabaseForDevelopment() {
-//        seedDatabase();
-//        indexItemsInMeiliSearch();
-//    }
-
-	/*
-	 * @PostConstruct
-	 * 
-	 * @Profile("prod") public void seedDatabaseForProduction() { seedDatabase();
-	 * indexItemsInMeiliSearch(); }
-	 */
-
-    @PostConstruct
-    public void seedDatabase() {
-        try {
-            TVA tva20 = new TVA("", "TVA20", 0.2, new ArrayList<>());
-            TVA tva10 = new TVA("", "TVA10", 0.1, new ArrayList<>());
-            TVA tva5 = new TVA("", "TVA5.5", 0.055, new ArrayList<>());
-            TVA tva2 = new TVA("", "TVA2.1", 0.021, new ArrayList<>());
-
-            TVARepository.save(tva20);
-            TVARepository.save(tva10);
-            TVARepository.save(tva5);
-            TVARepository.save(tva2);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-        try {
-        Category itemsCategory = null;
-        if (!categoryService.categoryExists("Articles", null)) {
-            itemsCategory = new Category();
-            itemsCategory.setName("Articles");
-            categoryService.save(itemsCategory);
-        }
-
-        Category booksCategory = null;
-        if (itemsCategory!= null && !categoryService.categoryExists("Livres", itemsCategory.getId())) {
-            booksCategory = new Category();
-            booksCategory.setParent(itemsCategory);
-            booksCategory.setName("Livres");
-            categoryService.save(booksCategory);
-        }
-
-        Category moviesCategory = null;
-        if (itemsCategory!= null && !categoryService.categoryExists("Vidéos", itemsCategory.getId())) {
-            moviesCategory = new Category();
-            moviesCategory.setName("Vidéos");
-            moviesCategory.setParent(itemsCategory);
-            categoryService.save(moviesCategory);
-        }
-
-        Category frenchBooksCategory = null;
-        if (booksCategory!= null && !categoryService.categoryExists("Langue Française", booksCategory.getId())) {
-            frenchBooksCategory = new Category();
-            frenchBooksCategory.setName("Langue Française");
-            frenchBooksCategory.setParent(booksCategory);
-            categoryService.save(frenchBooksCategory);
-        }
-
-        Category englishBooksCategory = null;
-        if (booksCategory!= null && !categoryService.categoryExists("Langue Anglaise", booksCategory.getId())) {
-            englishBooksCategory = new Category();
-            englishBooksCategory.setName("Langue Anglaise");
-            englishBooksCategory.setParent(booksCategory);
-            categoryService.save(englishBooksCategory);
-        }
-
-        Category frenchMoviesCategory = null;
-        if (moviesCategory!= null && !categoryService.categoryExists("Langue Française", moviesCategory.getId())) {
-            frenchMoviesCategory = new Category();
-            frenchMoviesCategory.setName("Langue Française");
-            frenchMoviesCategory.setParent(moviesCategory);
-            categoryService.save(frenchMoviesCategory);
-        }
-
-        Category englishMoviesCategory = null;
-        if (moviesCategory!= null && !categoryService.categoryExists("Langue Anglaise", moviesCategory.getId())) {
-            englishMoviesCategory = new Category();
-            englishMoviesCategory.setParent(moviesCategory);
-            englishMoviesCategory.setName("Langue Anglaise");
-            categoryService.save(englishMoviesCategory);
-        }
-
-        } catch (DataIntegrityViolationException e) {
-        }
-
-        for (int i = 1; i <= 8; i++) {
-            fetchData(i);
-        }
-    }
-
-
-    @Async
-    public void fetchData(int pageNumber) {
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://api.itbook.store/1.0/search/mongodb/" + pageNumber))
-                .build();
-
-        client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenApply(HttpResponse::body)
-                .thenApply(this::parse);
-    }
-
-    public String parse(String responseBody) {
-        try {
-            JSONObject json = new JSONObject(responseBody);
-            JSONArray books = json.getJSONArray("books");
-            for (int i = 0; i < books.length(); i++) {
-                JSONObject book = books.getJSONObject(i);
-                String isbn13 = book.getString("isbn13");
-                getBookDetails(isbn13);
-            }
-        } catch (JSONException e) {
-
-        }
-        return null;
-    }
-
-    public void getBookDetails(String isbn13) {
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://api.itbook.store/1.0/books/" + isbn13))
-                .build();
-
-        client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenApply(HttpResponse::body)
-                .thenApply(t -> {
-					try {
-						return parseBookDetails(t);
-					} catch (Exception e) {
-					}
-					return t;
-				})
-                .join();
-    }
-
-    public String parseBookDetails(String responseBody) throws Exception {
-    	try {
-            JSONObject json = new JSONObject(responseBody);
-
-         // Extraire les informations du livre à partir du JSON
-            String title = json.getString("title");
-            String subtitle = json.getString("subtitle");
-            String authors = json.getString("authors");
-            String publisher = json.getString("publisher");
-            String isbn13 = json.getString("isbn13");
-            String pages = json.getString("pages");
-            String language = json.getString("language");
-            String year = json.getString("year");
-            String description = json.getString("desc");
-            String rating = json.getString("rating");
-
-            String priceString = json.getString("price");
-            String imageUrl = json.getString("image");
-
-            Set<Author> authorsSplitString = Arrays.stream(authors.split(","))
-                    .map(String::trim)
-                    .map(fullName -> {
-                        String[] nameParts = fullName.split(" ");
-                        String firstName = nameParts[0];
-                        String lastName = nameParts.length > 1 ? nameParts[1] : "";
-                        Author author = new Author();
-                        author.setFirstname(firstName);
-                        author.setLastname(lastName);
-                        return author;
-                    })
-                    .collect(Collectors.toSet());
-            
-            // Créer un objet Editor à partir du nom de l'éditeur
-            Editor editor = new Editor();
-            editor.setName(publisher);
-            
-            // Créer et enregistrer un objet Book
-            Book book = Book.builder()
-                    .title(title)
-                    .subtitle(subtitle)
-                    .authors(authorsSplitString)
-                    .editor(editor)
-                    .isbn13(isbn13)
-                    .pages(pages)
-                    .year(year)
-                    .version(ThreadLocalRandom.current().nextInt(1, 5))
-                    .build();
-
-            // Créer et enregistrer un objet Item
-            BigDecimal price = new BigDecimal(priceString.replace("$", "").trim());
-            book.setRegularPrice(price);
-            book.setImageUrl(imageUrl);
-            book.setDescription(description);
-            book.setIsNewCollection((short) (Integer.parseInt(year) >= 2022 ?
-            						1 : 0)
-            		);
-            book.setQuantityInStock(ThreadLocalRandom.current().nextInt(0, 333));
-            book.setRating((float) Integer.parseInt(rating) == 0 ? 5 : (float) Integer.parseInt(rating));
-            book.setLanguage(language);
-            book.setCategory(language.equalsIgnoreCase("English") ?
-            		this.categoryService.findById(5l) :
-            			this.categoryService.findById(4l));
-            
-            try {
-            	bookService.save(book);
-            } catch (DataIntegrityViolationException e) {
-            }
-
-
-        } catch (JSONException e) {
-
-        }
-        return null;
-    }
-}
-        
-
-            
+*/
             
    
