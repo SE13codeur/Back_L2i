@@ -44,9 +44,6 @@ public abstract class Item implements MeiliSearchModel {
     
     private int totalSales;
 
-    @ManyToOne
-    TVA tva;
-
     @OneToMany(mappedBy = "book")
     List<OrderLine> orderLines;
 

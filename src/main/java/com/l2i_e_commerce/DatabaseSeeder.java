@@ -50,21 +50,20 @@ public class DatabaseSeeder {
     @Autowired
     private EditorRepository editorRepository;
 
-    @Autowired
-    private TVAService tvaService;
+    /*@Autowired
+    private TVAService tvaService;*/
 
     @Autowired
     private CategoryService categoryService;
 
     @Autowired
     public DatabaseSeeder(ItemService<Book, ?> itemService, BookService bookService,
-                          AuthorRepository authorRepository, EditorRepository editorRepository, CategoryService categoryService, TVAService tvaService) {
+                          AuthorRepository authorRepository, EditorRepository editorRepository, CategoryService categoryService) {
         this.bookService = bookService;
         this.authorRepository = authorRepository;
         this.editorRepository = editorRepository;
         this.categoryService = categoryService;
         this.itemService = itemService;
-        this.tvaService = tvaService;
     }
 
 //    @PostConstruct
@@ -82,7 +81,7 @@ public class DatabaseSeeder {
 
     public void seedDatabase() {
         System.err.println("Entrée du seeder");
-        try {
+        /*try {
             TVA tva20 = new TVA();
             tva20.setTvaType("tva20");
             tva20.setTvaRate(0.2);
@@ -106,7 +105,7 @@ public class DatabaseSeeder {
             this.tvaService.save(tva2);
         } catch (Exception ex) {
             System.err.println("Erreur de la sauvegarde de la TVA");
-        }
+        }*/
 
         try {
             Category itemsCategory = null;
@@ -280,7 +279,7 @@ public class DatabaseSeeder {
             book.setCategory(language.equalsIgnoreCase("English") ?
                     this.categoryService.findById(4l) :
                     this.categoryService.findById(5l));
-            book.setTva(this.tvaService.findById(3l));
+//            book.setTva(this.tvaService.findById(3l));
 
             try {
                 bookService.save(book);

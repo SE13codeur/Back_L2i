@@ -1,3 +1,4 @@
+/*
 package com.l2i_e_commerce.model;
 
 import jakarta.persistence.*;
@@ -24,4 +25,4 @@ public class TVA {
     @OneToMany(mappedBy = "tva")
     List<Book> books;
 
-}
+}*/

@@ -44,8 +44,8 @@ public class Book extends Item {
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
     private List<OrderLine> orderLines;
 
-    @ManyToOne
-    TVA tva;
+    /*@ManyToOne
+    TVA tva;*/
 
     @JsonIgnore
     @ManyToMany(mappedBy = "books")

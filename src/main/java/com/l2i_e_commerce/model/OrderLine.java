@@ -16,8 +16,8 @@ public class OrderLine {
 
     Double unitPriceTTC;
 
-    @ManyToOne
-    TVA tva;
+   /* @ManyToOne
+    TVA tva;*/
 
     @ManyToOne
     @JoinColumn(name = "order_id", nullable = false)

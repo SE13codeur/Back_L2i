@@ -72,3 +72,5 @@ js/
 **/application-prod.properties
 **/application-dev.properties
 
+# JWT
+/src/main/resources/jwt/
