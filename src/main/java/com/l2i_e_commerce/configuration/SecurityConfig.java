@@ -26,31 +26,33 @@ import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 
-import lombok.AllArgsConstructor;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true, prePostEnabled = true)
-@AllArgsConstructor
 public class SecurityConfig {
 
-    private UserDetailsService userDetailsService;
-    private RsaKeyProperties rsaKeyProperties;
+    private final UserDetailsService userDetailsService;
+
+    public SecurityConfig(UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
 
     @Bean
-    PasswordEncoder encoder() {
+    public PasswordEncoder encoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    AuthenticationManager users(HttpSecurity http) throws Exception {
+    public AuthenticationManager users(HttpSecurity http) throws Exception {
         return http.getSharedObject(AuthenticationManagerBuilder.class).userDetailsService(userDetailsService)
                 .passwordEncoder(encoder()).and().build();
-
     }
 
     @Bean
-    SecurityFilterChain filter(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filter(HttpSecurity http) throws Exception {
         return http
                 .csrf().disable()
                 .cors().and()
@@ -65,14 +67,32 @@ public class SecurityConfig {
     }
 
     @Bean
-    JwtDecoder jwtDecoder() {
-        return NimbusJwtDecoder.withPublicKey(rsaKeyProperties.publicKey()).build();
+    public JwtDecoder jwtDecoder(RSAPublicKey publicKey) {
+        return NimbusJwtDecoder.withPublicKey(publicKey).build();
     }
 
     @Bean
-    JwtEncoder jwtEncoder() {
-        JWK jwk = new RSAKey.Builder(rsaKeyProperties.publicKey()).privateKey(rsaKeyProperties.privateKey()).build();
+    public JwtEncoder jwtEncoder(RSAPublicKey publicKey) {
+        JWK jwk = new RSAKey.Builder(publicKey).build();
         JWKSource<SecurityContext> jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
         return new NimbusJwtEncoder(jwks);
+    }
+
+    @Bean
+    public RSAPublicKey rsaPublicKey() {
+        try {
+            return KeyLoader.loadPublicKey("/jwt/public.pem");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Bean
+    public RSAPrivateKey rsaPrivateKey() {
+        try {
+            return KeyLoader.loadPrivateKey("/jwt/private.pem");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
