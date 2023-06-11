@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface EditorService {
     Editor save(Editor editor);
+    Editor findByName(String name);
     List<Editor> findAll();
     Editor findById(Long id);
     Editor update(Long id, Editor updatedEditor);

@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface AuthorService {
     Author save(Author author);
+    List<Author> findByFirstnameAndLastname(String firstname, String lastname);
     List<Author> findAll();
     Author findById(Long id);
     Author update(Long id, Author updatedAuthor);

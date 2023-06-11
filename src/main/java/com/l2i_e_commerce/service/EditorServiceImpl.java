@@ -18,7 +18,10 @@ public class EditorServiceImpl implements EditorService {
     public Editor save(Editor editor) {
         return editorRepository.save(editor);
     }
-
+    @Override
+    public Editor findByName(String name) {
+        return editorRepository.findByName(name);
+    }
     @Override
     public List<Editor> findAll() {
         return editorRepository.findAll();
