@@ -21,7 +21,7 @@ public class SpringOauthJwtApplication {
         SpringApplication.run(SpringOauthJwtApplication.class, args);
     }
 
-    @Bean
+    /*@Bean
     CommandLineRunner start(UserRepository userRepository, PasswordEncoder encoder) {
         return args -> {
 
@@ -31,5 +31,5 @@ public class SpringOauthJwtApplication {
                     User.builder().username("admin").password(encoder.encode("admin"))
                             .roles(List.of(new Role("ADMIN"))).build()));
         };
-    }
+    }*/
 }

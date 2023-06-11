@@ -1,12 +1,6 @@
 package com.l2i_e_commerce.model;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,10 +20,14 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+
+    @Column(unique = true, nullable = false)
     @NonNull
     String username;
+
     @NonNull
     String password;
+
     @NonNull
     @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     List<Role> roles;
