@@ -45,10 +45,10 @@ public class DatabaseSeeder {
     private BookService bookService;
 
     @Autowired
-    private AuthorRepository authorRepository;
+    private AuthorService authorService;
 
     @Autowired
-    private EditorRepository editorRepository;
+    private EditorService editorService;
 
     @Autowired
     private TVAService tvaService;
@@ -58,10 +58,10 @@ public class DatabaseSeeder {
 
     @Autowired
     public DatabaseSeeder(ItemService<Book, ?> itemService, BookService bookService,
-                          AuthorRepository authorRepository, EditorRepository editorRepository, CategoryService categoryService, TVAService tvaService) {
+                          AuthorService authorService, EditorService editorService, CategoryService categoryService, TVAService tvaService) {
         this.bookService = bookService;
-        this.authorRepository = authorRepository;
-        this.editorRepository = editorRepository;
+        this.authorService = authorService;
+        this.editorService = editorService;
         this.categoryService = categoryService;
         this.itemService = itemService;
         this.tvaService = tvaService;
@@ -231,34 +231,46 @@ public class DatabaseSeeder {
             String pages = json.getString("pages");
             String language = json.getString("language");
             String year = json.getString("year");
-            String description = json.getString("desc");
+            String description = json.getString("desc").replace("'", "\'");
             String rating = json.getString("rating");
 
             String priceString = json.getString("price");
             String imageUrl = json.getString("image");
 
-            Set<Author> authorsSplitString = Arrays.stream(authors.split(","))
-                    .map(String::trim)
-                    .map(fullName -> {
-                        String[] nameParts = fullName.split(" ");
-                        String firstName = nameParts[0];
-                        String lastName = nameParts.length > 1 ? nameParts[1] : "";
-                        Author author = new Author();
-                        author.setFirstname(firstName);
-                        author.setLastname(lastName);
-                        return author;
-                    })
-                    .collect(Collectors.toSet());
+            Set<Author> authorsSet = new HashSet<Author>();
+            String[] authorsArray = authors.split(",");
+            for (int i = 0; i < authorsArray.length; i++){
+                String currentAuthorStr = authorsArray[i];
+                String[] currentAuthorArray = currentAuthorStr.split(" ");
+                String firstname = currentAuthorArray[0];
+                String lastname = currentAuthorArray[1];
+                List<Author> authorsList = this.authorService.findByFirstnameAndLastname(firstname, lastname);
+                if (authorsList.size() == 0){
+                    Author authorNew = new Author();
+                    authorNew.setFirstname(firstname);
+                    authorNew.setLastname(lastname);
+                    this.authorService.save(authorNew);
+                    authorsSet.add(authorNew);
+                } else {
+                    authorsSet.add(authorsList.get(0));
+                }
+            }
 
             // Créer un objet Editor à partir du nom de l'éditeur
             Editor editor = new Editor();
-            editor.setName(publisher);
+            Editor currentEditor = this.editorService.findByName(publisher);
+            if(currentEditor != null){
+                editor = currentEditor;
+            } else {
+                editor.setName(publisher);
+                this.editorService.save(editor);
+            }
 
             // Créer et enregistrer un objet Book
             Book book = Book.builder()
                     .title(title)
                     .subtitle(subtitle)
-                    .authors(authorsSplitString)
+                    .authors(authorsSet)
                     .editor(editor)
                     .isbn13(isbn13)
                     .pages(pages)
