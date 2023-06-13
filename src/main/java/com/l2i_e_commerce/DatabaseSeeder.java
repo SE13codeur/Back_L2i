@@ -1,6 +1,5 @@
 package com.l2i_e_commerce;
 
-import com.l2i_e_commerce.dao.*;
 import com.l2i_e_commerce.model.*;
 import com.l2i_e_commerce.service.*;
 
@@ -21,9 +20,6 @@ import java.net.*;
 import java.net.http.*;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
-
-import java.util.stream.Collectors;
-
 
 @Component
 @EnableAsync
