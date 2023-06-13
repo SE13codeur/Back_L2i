@@ -1,5 +1,6 @@
 package com.l2i_e_commerce.model;
 
+import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -24,14 +25,14 @@ public class Book extends Item {
     private String isbn13;
 
     private String title;
-    
+
     private String subtitle;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-        name = "book_author",
-        joinColumns = @JoinColumn(name = "book_id"),
-        inverseJoinColumns = @JoinColumn(name = "author_id")
+            name = "book_author",
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "author_id")
     )
     private Set<Author> authors;
 
@@ -40,12 +41,19 @@ public class Book extends Item {
     private Editor editor;
 
     @JsonIgnore
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
+    private List<OrderLine> orderLines;
+
+    @ManyToOne
+    TVA tva;
+
+    @JsonIgnore
     @ManyToMany(mappedBy = "books")
     private Set<Sale> bookSales;
-    
+
     @ManyToOne
     @JoinColumn(name = "category_id")
-    private Category booksCategory;
+    private Category category;
 
     private String pages;
     private String year;

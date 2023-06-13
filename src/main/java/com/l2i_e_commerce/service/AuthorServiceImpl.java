@@ -1,24 +1,50 @@
 package com.l2i_e_commerce.service;
 
-import java.util.List;
-
+import com.l2i_e_commerce.model.Author;
+import com.l2i_e_commerce.dao.AuthorRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.l2i_e_commerce.dao.AuthorRepository;
-import com.l2i_e_commerce.model.Author;
+import java.util.List;
+import java.util.Optional;
 
-@SuppressWarnings("rawtypes")
 @Service
 public class AuthorServiceImpl implements AuthorService {
-    private final AuthorRepository authorRepository;
 
-    public AuthorServiceImpl(AuthorRepository authorRepository) {
-        this.authorRepository = authorRepository;
+    @Autowired
+    private AuthorRepository authorRepository;
+
+    @Override
+    public Author save(Author author) {
+        return authorRepository.save(author);
     }
 
     @Override
-    public List<Author> searchAuthorsByName(String firstName, String lastName) {
-        return authorRepository.findByFirstNameAndLastName(firstName, lastName);
+    public List<Author> findByFirstnameAndLastname(String firstname, String lastname) {
+        return authorRepository.findByFirstnameAndLastname(firstname, lastname);
     }
 
+    @Override
+    public List<Author> findAll() {
+        return authorRepository.findAll();
+    }
+
+    @Override
+    public Author findById(Long id) {
+        Optional<Author> author = authorRepository.findById(id);
+        return author.orElseThrow(() -> new RuntimeException("Author not found"));
+    }
+
+    @Override
+    public Author update(Long id, Author updatedAuthor) {
+        findById(id);
+        updatedAuthor.setId(id);
+        return authorRepository.save(updatedAuthor);
+    }
+
+    @Override
+    public void delete(Long id) {
+        findById(id);
+        authorRepository.deleteById(id);
+    }
 }

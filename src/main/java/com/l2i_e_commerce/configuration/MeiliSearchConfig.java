@@ -1,3 +1,4 @@
+/*
 package com.l2i_e_commerce.configuration;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -30,6 +31,7 @@ public class MeiliSearchConfig {
         return new Client(config);
     }
 }
+*/
 
 
 

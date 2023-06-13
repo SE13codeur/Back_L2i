@@ -7,7 +7,7 @@ import java.util.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AuthorRepository extends JpaRepository<Author, Long> {
-	List<Author> findByFirstNameAndLastName(String firstName, String lastName);
+	List<Author> findByFirstnameAndLastname(String firstname, String lastname);
     Set<Author> findByBooks_Id(Long bookId);
 }
 

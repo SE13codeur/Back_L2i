@@ -67,3 +67,8 @@ HELP.md
 
 # Ignore the 'js' folder and all its files
 js/
+
+# For password of DB
+**/application-prod.properties
+**/application-dev.properties
+

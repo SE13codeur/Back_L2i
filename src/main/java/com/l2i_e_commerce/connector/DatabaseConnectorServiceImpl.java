@@ -1,4 +1,4 @@
-package com.l2i_e_commerce.connector;
+/*package com.l2i_e_commerce.connector;
 
 import com.l2i_e_commerce.model.Item;
 import com.l2i_e_commerce.service.*;
@@ -17,5 +17,5 @@ public class DatabaseConnectorServiceImpl implements DatabaseConnectorService {
 		// TODO Auto-generated method stub
 		
 	}    
-}
+}*/
 
