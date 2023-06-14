@@ -31,6 +31,9 @@ public class User {
     String lastname;
 
     @Column(unique = true)
+    String username;
+
+    @Column(unique = true)
     String email;
 
     String password;

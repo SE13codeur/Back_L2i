@@ -1,13 +1,16 @@
 package com.l2i_e_commerce.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 import java.util.Date;
 import java.util.List;
 
+
 @Data
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "orders")
 public class Order {
     @Id
@@ -37,6 +40,3 @@ public class Order {
     List<OrderLine> orderLines;
 }
 
-enum OrderStatus {
-    PENDING, COMPLETED, CANCELLED
-}

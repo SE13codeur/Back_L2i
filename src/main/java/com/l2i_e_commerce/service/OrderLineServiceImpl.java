@@ -29,13 +29,15 @@ public class OrderLineServiceImpl implements OrderLineService {
     }
 
     @Override
-    public void delete(OrderLine orderLine) {
+    public boolean delete(OrderLine orderLine) {
         orderLineRepository.delete(orderLine);
+        return true;
     }
 
     @Override
-    public void deleteById(Long id) {
+    public boolean deleteById(Long id) {
         orderLineRepository.deleteById(id);
+        return true;
     }
 
     @Override

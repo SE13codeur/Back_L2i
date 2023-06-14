@@ -7,8 +7,8 @@ import java.util.List;
 public interface OrderService {
     Order save(Order order);
     Order update(Order order);
-    void delete(Order order);
-    void deleteById(Long id);
+    boolean delete(Order order);
+    boolean deleteById(Long id);
     Order findById(Long id);
     List<Order> findAll();
 }

@@ -29,13 +29,16 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void delete(Order order) {
+    public boolean delete(Order order) {
         orderRepository.delete(order);
+        return true;
+
     }
 
     @Override
-    public void deleteById(Long id) {
+    public boolean deleteById(Long id) {
         orderRepository.deleteById(id);
+        return true;
     }
 
     @Override
