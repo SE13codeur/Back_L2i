@@ -1,5 +1,6 @@
 package com.l2i_e_commerce.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,12 +31,7 @@ public class Order {
     @Temporal(TemporalType.TIMESTAMP)
     Date date;
 
-    @ManyToOne
-    Address billingAddress;
-
-    @ManyToOne
-    Address shippingAddress;
-
+    @JsonBackReference
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     List<OrderLine> orderLines;
 }

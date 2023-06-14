@@ -10,7 +10,8 @@ import java.util.List;
 @AllArgsConstructor
 public class CartDTO {
     private User user;
-    private Address billingAddress;
-    private Address shippingAddress;
     private List<CartItemDTO> cartItems;
+    private Double totalPriceHT;
+    private Double totalPriceTTC;
 }
+

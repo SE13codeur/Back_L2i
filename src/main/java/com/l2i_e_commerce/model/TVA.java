@@ -1,5 +1,6 @@
 package com.l2i_e_commerce.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -21,6 +22,7 @@ public class TVA {
 
     Double tvaRate;
 
+    @JsonBackReference
     @JsonIgnore
     @OneToMany(mappedBy = "tva")
     List<Book> books;
