@@ -11,7 +11,4 @@ import java.util.List;
 public class CartDTO {
     private User user;
     private List<CartItemDTO> cartItems;
-    private Double totalPriceHT;
-    private Double totalPriceTTC;
 }
-

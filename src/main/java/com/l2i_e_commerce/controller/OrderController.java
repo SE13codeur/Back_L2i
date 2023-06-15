@@ -76,7 +76,7 @@ public class OrderController {
                     orderLine.setOrderedQuantity(cartItemDTO.getQuantity());
                     orderLine.setUnitPriceTTC(cartItemDTO.getRegularPrice());
                     orderLine.setTva(cartItemDTO.getTva());
-                    orderLine.setUnitPriceHT(orderLine.getUnitPriceTTC() * (1 - orderLine.getTva().getTvaRate()));
+                    orderLine.setUnitPriceHT(Math.round(orderLine.getUnitPriceTTC() * (1 - orderLine.getTva().getTvaRate()) * 100.0) / 100.0);
                     order.setTotalPriceHT(order.getTotalPriceHT() + orderLine.getOrderedQuantity() * orderLine.getUnitPriceHT());
                     order.setTotalPriceTTC(order.getTotalPriceTTC() + orderLine.getOrderedQuantity() * orderLine.getUnitPriceTTC());
                     orderLine.setOrder(order);
@@ -88,7 +88,7 @@ public class OrderController {
                 }
             }
         }
-
+        order.setTotalPriceHT(Math.round(order.getTotalPriceHT() * 100.0) / 100.0);
         order.setOrderLines(orderLines);
 
         // Save the order after you have created and added all the order lines
