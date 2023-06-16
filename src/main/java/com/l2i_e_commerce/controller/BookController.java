@@ -31,15 +31,6 @@ public class BookController {
 		}
 	}
 
-//	@GetMapping("/{page}/{size}")
-//	public ResponseEntity<List<Book>> listBooks(@PathVariable int page, @PathVariable int size) {
-//		Page<Book> bookPage = bookService.findAll(page, size);
-//		if (bookPage.isEmpty()) {
-//			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//		}
-//		return new ResponseEntity<>(bookPage.getContent(), HttpStatus.OK);
-//	}
-
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<List<Book>> listBooks() {
 		List<Book> books = bookService.findAll();

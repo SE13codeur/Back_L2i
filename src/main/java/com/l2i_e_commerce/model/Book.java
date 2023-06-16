@@ -49,15 +49,19 @@ public class Book extends Item {
     @ManyToOne
     TVA tva;
 
-    @JsonIgnore
-    @ManyToMany(mappedBy = "books")
-    private Set<Sale> bookSales;
-
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
 
     private String pages;
+
     private String year;
+
     private int version;
+
+    private short onSale;
+
+    @JsonIgnore
+    @ManyToMany(mappedBy = "books")
+    private Set<Sale> bookSales;
 }
