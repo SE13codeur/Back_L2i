@@ -1,7 +1,7 @@
 package com.l2i_e_commerce.model;
 
 public enum OrderStatus {
-    PENDING("En attente"),
+    PENDING("En attente de confirmation"),
     CONFIRMED("Confirmé"),
     SHIPPING("En cours de livraison"),
     DELIVERED("Livré");

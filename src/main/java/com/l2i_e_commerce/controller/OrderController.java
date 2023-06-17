@@ -28,6 +28,7 @@ public class OrderController {
 
     @Autowired
     private BookService bookService;
+
     @GetMapping
     public List<Order> findAll() {
         return orderService.findAll();
@@ -84,10 +85,10 @@ public class OrderController {
 
                         orderLineService.save(orderLine);
                     } else {
-                        // Handle case where quantity or price is zero. You might want to return an error or do something else.
+                        // Handle case where quantity or price is zero.
                     }
                 } else {
-                    // Handle case where book is not found. You might want to return an error or do something else.
+                    // Handle case where book is not found.
                 }
             }
         }
@@ -114,8 +115,6 @@ public class OrderController {
         // Construct the new order number
         return "S" + String.format("%03d", user.getId()) + "-" + String.format("%07d", sequence);
     }
-
-
 
     @PutMapping("/{id}")
     public ResponseEntity<Order> updateOrder(@PathVariable Long id, @RequestBody Order orderDetails) {
