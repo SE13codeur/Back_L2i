@@ -56,4 +56,10 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.findByUser(user);
     }
 
+    @Override
+    public String findLastOrderNumberByUser(User user) {
+        List<String> orderNumbers = orderRepository.findOrderNumbersByUser(user);
+        return orderNumbers.isEmpty() ? null : orderNumbers.get(0);
+    }
+
 }

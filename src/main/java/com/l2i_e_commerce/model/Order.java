@@ -18,6 +18,9 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
+    @Column(name = "order_number", nullable = false, unique = true)
+    String orderNumber;
+
     @ManyToOne
     User user;
 

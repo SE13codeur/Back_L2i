@@ -44,6 +44,10 @@ public class OrderController {
 
         User user = this.userService.findByUsername(cartDTO.getUser().getUsername());
 
+        // Generate Order Number
+        String orderNumber = generateOrderNumber(user);
+        order.setOrderNumber(orderNumber);
+
         // Set user, billing address, shipping address, etc.
         order.setUser(user);
         order.setStatus(OrderStatus.PENDING);
@@ -68,16 +72,20 @@ public class OrderController {
                     Book book = bookOptional.get();
                     orderLine.setBook(book);
 
-                    orderLine.setOrderedQuantity(cartItemDTO.getQuantity());
-                    orderLine.setUnitPriceTTC(cartItemDTO.getRegularPrice());
-                    orderLine.setTva(cartItemDTO.getTva());
-                    orderLine.setUnitPriceHT(Math.round(orderLine.getUnitPriceTTC() * (1 - orderLine.getTva().getTvaRate()) * 100.0) / 100.0);
-                    order.setTotalPriceHT(order.getTotalPriceHT() + orderLine.getOrderedQuantity() * orderLine.getUnitPriceHT());
-                    order.setTotalPriceTTC(order.getTotalPriceTTC() + orderLine.getOrderedQuantity() * orderLine.getUnitPriceTTC());
-                    orderLine.setOrder(order);
-                    orderLines.add(orderLine);
+                    if (cartItemDTO.getQuantity() > 0 && cartItemDTO.getRegularPrice() > 0) {
+                        orderLine.setOrderedQuantity(cartItemDTO.getQuantity());
+                        orderLine.setUnitPriceTTC(cartItemDTO.getRegularPrice());
+                        orderLine.setTva(cartItemDTO.getTva());
+                        orderLine.setUnitPriceHT(Math.round(orderLine.getUnitPriceTTC() * (1 - orderLine.getTva().getTvaRate()) * 100.0) / 100.0);
+                        order.setTotalPriceHT(order.getTotalPriceHT() + orderLine.getOrderedQuantity() * orderLine.getUnitPriceHT());
+                        order.setTotalPriceTTC(order.getTotalPriceTTC() + orderLine.getOrderedQuantity() * orderLine.getUnitPriceTTC());
+                        orderLine.setOrder(order);
+                        orderLines.add(orderLine);
 
-                    orderLineService.save(orderLine);
+                        orderLineService.save(orderLine);
+                    } else {
+                        // Handle case where quantity or price is zero. You might want to return an error or do something else.
+                    }
                 } else {
                     // Handle case where book is not found. You might want to return an error or do something else.
                 }
@@ -91,6 +99,22 @@ public class OrderController {
 
         return new ResponseEntity<>(createdOrder, HttpStatus.CREATED);
     }
+
+    private String generateOrderNumber(User user) {
+        // Fetch the last order number for the user
+        String lastOrderNumber = orderService.findLastOrderNumberByUser(user);
+
+        // Extract sequence number and increment it
+        int sequence = 0;
+        if (lastOrderNumber != null) {
+            sequence = Integer.parseInt(lastOrderNumber.split("-")[1]);
+        }
+        sequence++;
+
+        // Construct the new order number
+        return "S" + String.format("%03d", user.getId()) + "-" + String.format("%07d", sequence);
+    }
+
 
 
     @PutMapping("/{id}")

@@ -13,6 +13,7 @@ public interface OrderService {
     boolean deleteById(Long id);
     Order findById(Long id);
     List<Order> findAll();
-
     List<Order> findByUser(User user);
+    String findLastOrderNumberByUser(User user);
+
 }
