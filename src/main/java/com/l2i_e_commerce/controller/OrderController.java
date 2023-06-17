@@ -33,14 +33,9 @@ public class OrderController {
         return orderService.findAll();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Order> findById(@PathVariable Long id) {
-        Order order = orderService.findById(id);
-        if(orderService.save(order) != null) {
-            return new ResponseEntity<>(order, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    @GetMapping("/{username}")
+    public List<Order> getOrdersByUsername(@PathVariable String username) {
+        return orderService.findByUser(userService.findByUsername(username));
     }
 
     @PostMapping
@@ -96,7 +91,6 @@ public class OrderController {
 
         return new ResponseEntity<>(createdOrder, HttpStatus.CREATED);
     }
-
 
 
     @PutMapping("/{id}")
