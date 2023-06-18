@@ -39,6 +39,18 @@ public class OrderController {
         return orderService.findByUser(userService.findByUsername(username));
     }
 
+    @PutMapping("/{username}")
+    public ResponseEntity<?> updateOrderStatus(
+            @PathVariable String username,
+            @RequestBody OrderStatusUpdateDTO orderStatusUpdateDTO) {
+        try {
+            orderService.updateOrderStatus(username, orderStatusUpdateDTO.getOrderNumber(), orderStatusUpdateDTO.getStatus());
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @PostMapping
     public ResponseEntity<Order> createOrder(@RequestBody CartDTO cartDTO) {
         Order order = new Order();
@@ -116,7 +128,7 @@ public class OrderController {
         return "S" + String.format("%03d", user.getId()) + "-" + String.format("%07d", sequence);
     }
 
-    @PutMapping("/{id}")
+    /*@PutMapping("/{id}")
     public ResponseEntity<Order> updateOrder(@PathVariable Long id, @RequestBody Order orderDetails) {
         Order order = orderService.findById(id);
 
@@ -127,15 +139,15 @@ public class OrderController {
             order.setTotalPriceTTC(orderDetails.getTotalPriceTTC());
             order.setStatus(orderDetails.getStatus());
             order.setDate(orderDetails.getDate());
-            /*order.setBillingAddress(orderDetails.getBillingAddress());
-            order.setShippingAddress(orderDetails.getShippingAddress());*/
+            *//*order.setBillingAddress(orderDetails.getBillingAddress());
+            order.setShippingAddress(orderDetails.getShippingAddress());*//*
             order.setOrderLines(orderDetails.getOrderLines());
 
             return new ResponseEntity<>(orderService.update(order), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-    }
+    }*/
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteOrder(@PathVariable Long id) {
@@ -146,4 +158,6 @@ public class OrderController {
         }
         return ResponseEntity.badRequest().body("Failed to delete order.");
     }
+
+
 }
