@@ -1,18 +1,18 @@
 package com.l2i_e_commerce.model;
 
 public enum OrderStatus {
-    PENDING("En attente de confirmation"),
-    CONFIRMED("Confirmé"),
-    SHIPPING("En cours de livraison"),
-    DELIVERED("Livré");
+    PENDING("PENDING"),
+    CONFIRMED("CONFIRMED"),
+    SHIPPING("SHIPPING"),
+    DELIVERED("DELIVERED");
 
-    private final String description;
+    private final String value;
 
-    OrderStatus(String description) {
-        this.description = description;
+    OrderStatus(String value) {
+        this.value = value;
     }
 
-    public String getDescription() {
-        return description;
+    public String getValue() {
+        return value;
     }
 }
