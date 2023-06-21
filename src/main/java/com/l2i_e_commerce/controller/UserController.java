@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/auth")
 public class UserController {
@@ -17,6 +19,11 @@ public class UserController {
     @GetMapping("/{username}")
     public User getUserByUsername(@PathVariable String username) {
         return userService.findByUsername(username);
+    }
+
+    @GetMapping()
+    public List<User> getUserByUsername() {
+        return userService.findAll();
     }
 
     @PutMapping("/{id}")

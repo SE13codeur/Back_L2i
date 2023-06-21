@@ -53,64 +53,68 @@ public class OrderController {
 
     @PostMapping
     public ResponseEntity<Order> createOrder(@RequestBody CartDTO cartDTO) {
-        Order order = new Order();
+        if (cartDTO.getCartItems().size() > 0 ) {
 
-        User user = this.userService.findByUsername(cartDTO.getUser().getUsername());
+            Order order = new Order();
 
-        // Generate Order Number
-        String orderNumber = generateOrderNumber(user);
-        order.setOrderNumber(orderNumber);
+            User user = this.userService.findByUsername(cartDTO.getUser().getUsername());
 
-        // Set user, billing address, shipping address, etc.
-        order.setUser(user);
-        order.setStatus(OrderStatus.PENDING);
-        order.setDate(new Date());
+            // Generate Order Number
+            String orderNumber = generateOrderNumber(user);
+            order.setOrderNumber(orderNumber);
 
-        // Initialize total prices
-        order.setTotalPriceHT(0.0);
-        order.setTotalPriceTTC(0.0);
+            // Set user, billing address, shipping address, etc.
+            order.setUser(user);
+            order.setStatus(OrderStatus.PENDING);
+            order.setDate(new Date());
 
-        List<OrderLine> orderLines = new ArrayList<>();
-        orderService.save(order);
+            // Initialize total prices
+            order.setTotalPriceHT(0.0);
+            order.setTotalPriceTTC(0.0);
 
-        List<CartItemDTO> cartItems = cartDTO.getCartItems();
-        if (cartItems != null) {
-            for (CartItemDTO cartItemDTO : cartItems) {
-                OrderLine orderLine = new OrderLine();
+            List<OrderLine> orderLines = new ArrayList<>();
+            orderService.save(order);
 
-                Optional<Book> bookOptional = this.bookService.findById(cartItemDTO.getId());
+            List<CartItemDTO> cartItems = cartDTO.getCartItems();
+            if (cartItems != null) {
+                for (CartItemDTO cartItemDTO : cartItems) {
+                    OrderLine orderLine = new OrderLine();
 
-                // Check if the book is present
-                if (bookOptional.isPresent()) {
-                    Book book = bookOptional.get();
-                    orderLine.setBook(book);
+                    Optional<Book> bookOptional = this.bookService.findById(cartItemDTO.getId());
 
-                    if (cartItemDTO.getQuantity() > 0 && cartItemDTO.getRegularPrice() > 0) {
-                        orderLine.setOrderedQuantity(cartItemDTO.getQuantity());
-                        orderLine.setUnitPriceTTC(cartItemDTO.getRegularPrice());
-                        orderLine.setTva(cartItemDTO.getTva());
-                        orderLine.setUnitPriceHT(Math.round(orderLine.getUnitPriceTTC() * (1 - orderLine.getTva().getTvaRate()) * 100.0) / 100.0);
-                        order.setTotalPriceHT(order.getTotalPriceHT() + orderLine.getOrderedQuantity() * orderLine.getUnitPriceHT());
-                        order.setTotalPriceTTC(order.getTotalPriceTTC() + orderLine.getOrderedQuantity() * orderLine.getUnitPriceTTC());
-                        orderLine.setOrder(order);
-                        orderLines.add(orderLine);
+                    // Check if the book is present
+                    if (bookOptional.isPresent()) {
+                        Book book = bookOptional.get();
+                        orderLine.setBook(book);
 
-                        orderLineService.save(orderLine);
+                        if (cartItemDTO.getQuantity() > 0 && cartItemDTO.getRegularPrice() > 0) {
+                            orderLine.setOrderedQuantity(cartItemDTO.getQuantity());
+                            orderLine.setUnitPriceTTC(cartItemDTO.getRegularPrice());
+                            orderLine.setTva(cartItemDTO.getTva());
+                            orderLine.setUnitPriceHT(Math.round(orderLine.getUnitPriceTTC() * (1 - orderLine.getTva().getTvaRate()) * 100.0) / 100.0);
+                            order.setTotalPriceHT(order.getTotalPriceHT() + orderLine.getOrderedQuantity() * orderLine.getUnitPriceHT());
+                            order.setTotalPriceTTC(order.getTotalPriceTTC() + orderLine.getOrderedQuantity() * orderLine.getUnitPriceTTC());
+                            orderLine.setOrder(order);
+                            orderLines.add(orderLine);
+
+                            orderLineService.save(orderLine);
+                        } else {
+                            // Handle case where quantity or price is zero.
+                        }
                     } else {
-                        // Handle case where quantity or price is zero.
+                        // Handle case where book is not found.
                     }
-                } else {
-                    // Handle case where book is not found.
                 }
             }
+            order.setTotalPriceHT(Math.round(order.getTotalPriceHT() * 100.0) / 100.0);
+            order.setOrderLines(orderLines);
+
+            // Save the order after you have created and added all the order lines
+            Order createdOrder = orderService.update(order);
+
+            return new ResponseEntity<>(createdOrder, HttpStatus.CREATED);
         }
-        order.setTotalPriceHT(Math.round(order.getTotalPriceHT() * 100.0) / 100.0);
-        order.setOrderLines(orderLines);
-
-        // Save the order after you have created and added all the order lines
-        Order createdOrder = orderService.update(order);
-
-        return new ResponseEntity<>(createdOrder, HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     private String generateOrderNumber(User user) {

@@ -9,6 +9,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CartDTO {
-    private User user;
     private List<CartItemDTO> cartItems;
+    private User user;
 }
