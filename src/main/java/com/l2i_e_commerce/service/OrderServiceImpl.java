@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -55,8 +56,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<Order> findByUser(User user) {
-        return orderRepository.findByUser(user);
+    public List<Order> findByUserId(Long id) {
+        return orderRepository.findByUserId(id);
     }
 
     @Override
@@ -65,29 +66,13 @@ public class OrderServiceImpl implements OrderService {
         return orderNumbers.isEmpty() ? null : orderNumbers.get(0);
     }
 
-    public void updateOrderStatus(String username, String orderNumber, OrderStatus status) throws Exception {
-        User user = userService.findByUsername(username);
-        List<Order> orders = orderRepository.findByUser(user);
-
-        if (orders != null && !orders.isEmpty()) {
-            Order targetOrder = null;
-            for (Order order : orders) {
-                if (order.getOrderNumber().equals(orderNumber)) {
-                    targetOrder = order;
-                    break;
-                }
-            }
-
-            if (targetOrder != null) {
-                targetOrder.setStatus(status);
-                orderRepository.save(targetOrder);
-            } else {
-                throw new Exception("Order not found for order number: " + orderNumber);
-            }
-        } else {
-            throw new Exception("Orders not found for username: " + username);
+    @Override
+    public void updateOrderStatus(Long id, OrderStatus status) throws Exception {
+        Optional<Order> order = orderRepository.findById(id);
+        if (order.isPresent()) {
+            Order updatedOrder = order.get();
+            updatedOrder.setStatus(status);
+            orderRepository.save(updatedOrder);
         }
     }
-
-
 }

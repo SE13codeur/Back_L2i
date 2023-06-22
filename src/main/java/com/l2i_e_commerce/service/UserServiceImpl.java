@@ -8,6 +8,7 @@ import com.l2i_e_commerce.model.User;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -15,6 +16,10 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
+    @Override
+    public Optional<User> findById(Long id) {
+        return userRepository.findById(id);
+    }
     @Override
     public User findByUsername(String username) {
         return userRepository.findByUsername(username);

@@ -14,6 +14,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity
@@ -53,11 +55,13 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/items/books/{id}").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/items/orders").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/items/orders").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/items/orders/{id}").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/account/user/profile").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/account/user/favorites").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/items/orders/{username}").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/items/payment").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/admin/items/books").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/admin/orders").permitAll()
+                                .requestMatchers(HttpMethod.PUT, "/admin/orders/{id}").permitAll()
                                 .anyRequest().authenticated()
                 )
 
@@ -68,6 +72,20 @@ public class SecurityConfig {
 
                 .httpBasic(Customizer.withDefaults())
                 .build();
+    }
+
+    @Bean
+    public WebMvcConfigurer corsConfigurerCustom() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**")
+                        .allowedOrigins("http://localhost:4200")
+                        .allowedMethods("*")
+                        .allowedHeaders("*")
+                        .allowCredentials(true);
+            }
+        };
     }
 
 

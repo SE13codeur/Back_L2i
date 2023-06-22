@@ -9,7 +9,6 @@ import java.util.Set;
 
 public interface OrderService {
     Order save(Order order);
-
     Order update(Order order);
 
     boolean delete(Order order);
@@ -20,9 +19,9 @@ public interface OrderService {
 
     List<Order> findAll();
 
-    List<Order> findByUser(User user);
+    List<Order> findByUserId(Long id);
 
     String findLastOrderNumberByUser(User user);
 
-    public void updateOrderStatus(String username, String orderNumber, OrderStatus status) throws Exception;
+    void updateOrderStatus(Long id, OrderStatus status) throws Exception;
 }

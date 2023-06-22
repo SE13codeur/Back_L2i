@@ -29,26 +29,13 @@ public class OrderController {
     @Autowired
     private BookService bookService;
 
-    @GetMapping
-    public List<Order> findAll() {
-        return orderService.findAll();
-    }
-
-    @GetMapping("/{username}")
-    public List<Order> getOrdersByUsername(@PathVariable String username) {
-        return orderService.findByUser(userService.findByUsername(username));
-    }
-
-    @PutMapping("/{username}")
-    public ResponseEntity<?> updateOrderStatus(
-            @PathVariable String username,
-            @RequestBody OrderStatusUpdateDTO orderStatusUpdateDTO) {
-        try {
-            orderService.updateOrderStatus(username, orderStatusUpdateDTO.getOrderNumber(), orderStatusUpdateDTO.getStatus());
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    @GetMapping("/{id}")
+    public List<Order> getOrdersByUserId(@PathVariable Long id) {
+        Optional<User> user = userService.findById(id);
+        if (user.isPresent()) {
+            return orderService.findByUserId(user.get().getId());
         }
+        return new ArrayList<>();
     }
 
     @PostMapping

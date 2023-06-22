@@ -10,6 +10,7 @@ import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByUser(User user);
+    List<Order> findByUserId(Long id);
 
     @Query("SELECT o.orderNumber FROM Order o WHERE o.user = :user ORDER BY o.id DESC")
     List<String> findOrderNumbersByUser(@Param("user") User user);
