@@ -55,6 +55,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/items/books/{id}").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/items/orders").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/items/orders").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/items/orders/{id}").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/items/orders/{id}").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/account/user/profile").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/account/user/favorites").permitAll()
@@ -72,20 +73,6 @@ public class SecurityConfig {
 
                 .httpBasic(Customizer.withDefaults())
                 .build();
-    }
-
-    @Bean
-    public WebMvcConfigurer corsConfigurerCustom() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:4200")
-                        .allowedMethods("*")
-                        .allowedHeaders("*")
-                        .allowCredentials(true);
-            }
-        };
     }
 
 
