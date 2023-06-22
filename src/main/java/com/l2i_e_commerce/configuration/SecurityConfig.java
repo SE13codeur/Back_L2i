@@ -57,6 +57,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "/items/orders").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/items/orders/{id}").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/items/orders/{id}").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/items/orderlines/{id}").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/account/user/profile").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/account/user/favorites").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/items/payment").permitAll()
