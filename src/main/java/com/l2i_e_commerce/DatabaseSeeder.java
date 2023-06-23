@@ -100,6 +100,7 @@ public class DatabaseSeeder {
             this.tvaService.save(tva10);
             this.tvaService.save(tva5);
             this.tvaService.save(tva2);
+
         } catch (Exception ex) {
             System.err.println("Erreur de la sauvegarde de la TVA");
         }
@@ -272,6 +273,7 @@ public class DatabaseSeeder {
                     .pages(pages)
                     .year(year)
                     .version(ThreadLocalRandom.current().nextInt(1, 5))
+                    .onSale((short) 0)
                     .build();
 
             // Créer et enregistrer un objet Item
@@ -279,9 +281,6 @@ public class DatabaseSeeder {
             book.setRegularPrice(price);
             book.setImageUrl(imageUrl);
             book.setDescription(description);
-            book.setIsNewCollection((short) (Integer.parseInt(year) >= 2022 ?
-                    1 : 0)
-            );
             book.setQuantityInStock(ThreadLocalRandom.current().nextInt(0, 333));
             book.setRating((float) Integer.parseInt(rating) == 0 ? 5 : (float) Integer.parseInt(rating));
             book.setLanguage(language);

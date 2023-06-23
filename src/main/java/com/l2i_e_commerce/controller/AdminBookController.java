@@ -62,12 +62,12 @@ public class AdminBookController {
             book.setYear(bookDetails.getYear());
             book.setLanguage(bookDetails.getLanguage());
             book.setVersion(bookDetails.getVersion());
+            book.setOnSale(bookDetails.getOnSale());
 
             return new ResponseEntity<>(bookService.save(book), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-
 }
 

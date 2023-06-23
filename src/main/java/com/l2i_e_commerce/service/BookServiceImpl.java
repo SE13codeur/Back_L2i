@@ -4,9 +4,6 @@ import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.l2i_e_commerce.model.*;
@@ -64,11 +61,6 @@ public class BookServiceImpl implements BookService {
 	@Override
 	public Optional<Book> findById(Long id) {
 		return bookRepository.findById(id);
-	}
-
-	@Override
-	public Page<Book> findByPage(int page, int size) {
-		return bookRepository.findAll(PageRequest.of(page, size));
 	}
 
 	@Override

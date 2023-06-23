@@ -1,10 +1,15 @@
 package com.l2i_e_commerce.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
+
+import java.util.Optional;
 
 @Data
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 public class OrderLine {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,11 +24,17 @@ public class OrderLine {
     @ManyToOne
     TVA tva;
 
+    @JsonBackReference
     @ManyToOne
-    @JoinColumn(name = "order_id", nullable = false)
+    @JoinColumn(name = "order_id")
     Order order;
 
+    @JsonBackReference
     @ManyToOne
-    @JoinColumn(name = "book_id", nullable = false)
-    Book book;
+    @JoinColumn(name = "book_id")
+    private Book book;
+
+    public void setBook(Book book) {
+        this.book = book;
+    }
 }
