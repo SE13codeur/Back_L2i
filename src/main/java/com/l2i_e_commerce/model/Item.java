@@ -33,13 +33,9 @@ public abstract class Item implements MeiliSearchModel {
     private BigDecimal regularPrice;
     
     private int quantityInStock;
-    
-    private short isInStock = 1;
-    
+
     private float rating;
-    
-    private short isNewCollection;
-    
+
     private String language;
     
     private int totalSales;
@@ -70,8 +66,6 @@ public abstract class Item implements MeiliSearchModel {
         this.imageUrl = imageUrl;
         this.description = description;
         this.regularPrice = regularPrice;
-        this.isInStock = isInStock;    	
-        this.isNewCollection = isNewCollection;
         this.language = language;
         this.totalSales = totalSales;
 

@@ -3,6 +3,7 @@ package com.l2i_e_commerce.model;
 import java.util.List;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
@@ -40,6 +41,7 @@ public class Book extends Item {
     @JoinColumn(name = "editor_id")
     private Editor editor;
 
+    @JsonBackReference
     @JsonIgnore
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
     private List<OrderLine> orderLines;
@@ -47,15 +49,19 @@ public class Book extends Item {
     @ManyToOne
     TVA tva;
 
-    @JsonIgnore
-    @ManyToMany(mappedBy = "books")
-    private Set<Sale> bookSales;
-
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
 
     private String pages;
+
     private String year;
+
     private int version;
+
+    private short onSale;
+
+    @JsonIgnore
+    @ManyToMany(mappedBy = "books")
+    private Set<Sale> bookSales;
 }

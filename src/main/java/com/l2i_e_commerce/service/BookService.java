@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BookService extends ItemService<Book, Long>{
-    Page<Book> findByPage(int page, int size);
     List<Book> findAll();
 
     Optional<Book> findById(Long id);
@@ -16,6 +15,5 @@ public interface BookService extends ItemService<Book, Long>{
     void deleteById(Long id);
 
     Book save(Book book);
-
-}
+    }
 
