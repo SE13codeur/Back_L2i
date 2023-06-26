@@ -73,6 +73,35 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/admin/categories").permitAll()
                                 .anyRequest().authenticated()
                 )
+                /*.authorizeHttpRequests(auth ->
+                        auth
+                                .requestMatchers(HttpMethod.GET, "/auth").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/items/books").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/items/books/new").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/items/books/promos").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/items/books/{id}").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/items/orders").authenticated()
+                                .requestMatchers(HttpMethod.POST, "/items/orders").authenticated()
+                                .requestMatchers(HttpMethod.GET, "/items/orders/{id}").authenticated()
+                                .requestMatchers(HttpMethod.POST, "/items/orders/{id}").authenticated()
+                                .requestMatchers(HttpMethod.GET, "/items/orderlines/{id}").authenticated()
+                                .requestMatchers(HttpMethod.POST, "/items/payment").authenticated()
+                                .requestMatchers(HttpMethod.GET, "/account/user/profile").authenticated()
+                                .requestMatchers(HttpMethod.GET, "/account/user/profile/address").authenticated()
+                                .requestMatchers(HttpMethod.POST, "/account/user/profile/address").authenticated()
+                                .requestMatchers(HttpMethod.GET, "/account/user/profile/address/{id}").authenticated()
+                                .requestMatchers(HttpMethod.DELETE, "/account/user/profile/address/{id}").authenticated()
+                                .requestMatchers(HttpMethod.GET, "/account/user/favorites").authenticated()
+                                .requestMatchers(HttpMethod.GET, "/admin/items/books").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.GET, "/admin/orders").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.PUT, "/admin/orders/{id}").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.GET, "/admin/authors").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.GET, "/admin/editors").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.GET, "/admin/categories").hasRole("ADMIN")
+                )*/
+
 
 
 /*
