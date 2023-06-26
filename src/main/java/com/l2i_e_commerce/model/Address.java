@@ -1,45 +1,30 @@
 package com.l2i_e_commerce.model;
 
-import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NonNull;
+import lombok.NoArgsConstructor;
 
 @Data
 @Entity
+@NoArgsConstructor
 @AllArgsConstructor
 public class Address {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	Long id;
+	private Long id;
 
-	@NonNull
-	String street;
+	private String title;
+	private String street;
+	private String city;
+	private String state;
+	private String zipCode;
+	private String country;
 
-	@NonNull
-	String zip;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id")
+	private User user;
 
-	@NonNull
-	String city;
-
-	@NonNull
-	String country;
-
-	@NonNull
-	@JsonIgnoreProperties("addresses")
-	@ManyToMany(mappedBy = "addresses")
-	List<User> users;
-
-	public Address() {
-
-	}
 }

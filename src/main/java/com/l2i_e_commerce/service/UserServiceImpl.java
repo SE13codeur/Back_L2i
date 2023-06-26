@@ -1,9 +1,9 @@
 package com.l2i_e_commerce.service;
 
+import com.l2i_e_commerce.model.*;
 import org.springframework.stereotype.Service;
 
 import com.l2i_e_commerce.dao.UserRepository;
-import com.l2i_e_commerce.model.User;
 
 import lombok.RequiredArgsConstructor;
 
@@ -32,8 +32,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User save(User user) {
+        if(user.getAddresses() != null) {
+            for(Address address : user.getAddresses()) {
+                address.setUser(user);
+            }
+        }
         return userRepository.save(user);
     }
+
+
 
     @Override
     public User updateUser(Long id, User updatedUser) {
@@ -48,5 +55,8 @@ public class UserServiceImpl implements UserService {
         }
         return null;
     }
+
+    @Override
+    public void deleteById(Long id) {userRepository.deleteById(id);}
 }
 

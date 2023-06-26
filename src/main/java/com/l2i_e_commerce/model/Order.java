@@ -37,5 +37,11 @@ public class Order {
     @JsonBackReference
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     List<OrderLine> orderLines;
+
+    @ManyToOne
+    private Address billingAddress;
+
+    @ManyToOne
+    private Address shippingAddress;
 }
 
