@@ -21,11 +21,6 @@ public class UserController {
         return userService.findById(id);
     }
 
-    @PutMapping("/{id}")
-    public User updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
-        return userService.updateUser(id, updatedUser);
-    }
-
     @PostMapping("/register")
     public ResponseEntity<User> register(@RequestBody User user) {
         User existingUser = userService.findByUsername(user.getUsername());

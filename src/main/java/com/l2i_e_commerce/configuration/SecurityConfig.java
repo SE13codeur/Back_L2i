@@ -60,6 +60,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/items/orderlines/{id}").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/items/payment").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/account/user/profile").permitAll()
+                                .requestMatchers(HttpMethod.PUT, "/account/user/profile/{userId}").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/account/user/profile/address").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/account/user/profile/address").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/account/user/profile/address/{id}").permitAll()
