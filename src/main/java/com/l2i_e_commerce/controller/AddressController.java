@@ -53,6 +53,15 @@ public class AddressController {
         return ResponseEntity.ok(addresses);
     }
 
+    @GetMapping("/order/{id}")
+    public ResponseEntity<Address> findById(@PathVariable Long id) {
+        Optional<Address> address = addressService.findById(id);
+        if (address.isPresent()){
+            return ResponseEntity.ok(address.get());
+        }
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteById(@PathVariable Long id) {
         addressService.deleteById(id);

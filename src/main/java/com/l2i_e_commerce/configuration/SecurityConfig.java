@@ -65,6 +65,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "/account/user/profile/address").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/account/user/profile/address/{id}").permitAll()
                                 .requestMatchers(HttpMethod.DELETE, "/account/user/profile/address/{id}").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/account/user/profile/address/order/{id}").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/account/user/favorites").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/admin/items/books").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/admin/orders").permitAll()
