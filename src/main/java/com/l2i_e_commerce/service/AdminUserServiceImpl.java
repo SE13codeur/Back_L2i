@@ -36,14 +36,9 @@ public class AdminUserServiceImpl implements AdminUserService {
         return userRepository.save(user);
     }
 
-
-
     @Override
-    public User updateUser(User updatedUser) {
-        return userRepository.save(updatedUser);
+    public void deleteById(Long id) {
+
     }
-
-    @Override
-    public void deleteById(Long id) {userRepository.deleteById(id);}
 }
 

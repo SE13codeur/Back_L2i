@@ -9,7 +9,6 @@ public interface AdminUserService {
     Optional<User> findById(Long id);
     List<User> findAll();
     User save(User user);
-    User updateUser(User updatedUser);
 
     void deleteById(Long id);
 }
