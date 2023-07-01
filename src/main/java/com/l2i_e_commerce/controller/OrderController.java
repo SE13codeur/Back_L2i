@@ -32,15 +32,6 @@ public class OrderController {
     @Autowired
     private AddressService addressService;
 
-    @GetMapping("/{id}")
-    public List<Order> getOrdersByUserId(@PathVariable Long id) {
-        Optional<User> user = userService.findById(id);
-        if (user.isPresent()) {
-            return orderService.findByUserId(user.get().getId());
-        }
-        return new ArrayList<>();
-    }
-
     @PostMapping
     public ResponseEntity<Order> createOrder(@RequestBody CartDTO cartDTO) {
         if (cartDTO.getCartItems().size() > 0 ) {
@@ -116,6 +107,20 @@ public class OrderController {
             return new ResponseEntity<>(createdOrder, HttpStatus.CREATED);
         }
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping
+    public List<Order> findAll() {
+        return orderService.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public List<Order> getOrdersByUserId(@PathVariable Long id) {
+        Optional<User> user = userService.findById(id);
+        if (user.isPresent()) {
+            return orderService.findByUserId(user.get().getId());
+        }
+        return new ArrayList<>();
     }
 
     private String generateOrderNumber(User user) {

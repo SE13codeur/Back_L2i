@@ -73,6 +73,10 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/admin/authors").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/admin/editors").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/admin/categories").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/admin/users").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/admin/users").permitAll()
+                                .requestMatchers(HttpMethod.PUT, "/admin/users").permitAll()
+                                .requestMatchers(HttpMethod.DELETE, "/admin/users/{id}").permitAll()
                                 .anyRequest().authenticated()
                 )
                 /*.authorizeHttpRequests(auth ->

@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Data
 @Entity
 @AllArgsConstructor
