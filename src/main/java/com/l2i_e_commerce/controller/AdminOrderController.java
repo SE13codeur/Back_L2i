@@ -25,7 +25,16 @@ public class AdminOrderController {
 
     @GetMapping
     public List<Order> findAll() {
-        return orderService.findAll();
+        List<User> users = this.userService.findAll();
+        List<Order> orders = new ArrayList<>();
+        for(User user : users) {
+            List<Order> currentUserOrders = this.orderService.findByUserId(user.getId());
+            for(Order currentOrder : currentUserOrders) {
+               currentOrder.setUser(user);
+               orders.add(currentOrder);
+            }
+        }
+        return orders;
     }
 
     @PutMapping ("/{id}")

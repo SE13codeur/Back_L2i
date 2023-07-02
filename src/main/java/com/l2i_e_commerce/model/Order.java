@@ -1,6 +1,7 @@
 package com.l2i_e_commerce.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -37,5 +38,11 @@ public class Order {
     @JsonBackReference
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     List<OrderLine> orderLines;
+
+    @ManyToOne
+    private Address billingAddress;
+
+    @ManyToOne
+    private Address shippingAddress;
 }
 

@@ -29,14 +29,8 @@ public class OrderController {
     @Autowired
     private BookService bookService;
 
-    @GetMapping("/{id}")
-    public List<Order> getOrdersByUserId(@PathVariable Long id) {
-        Optional<User> user = userService.findById(id);
-        if (user.isPresent()) {
-            return orderService.findByUserId(user.get().getId());
-        }
-        return new ArrayList<>();
-    }
+    @Autowired
+    private AddressService addressService;
 
     @PostMapping
     public ResponseEntity<Order> createOrder(@RequestBody CartDTO cartDTO) {
@@ -45,6 +39,17 @@ public class OrderController {
             Order order = new Order();
 
             User user = this.userService.findByUsername(cartDTO.getUser().getUsername());
+            Optional<Address> billingAddress = this.addressService.findById(cartDTO.getBillingAddressId());
+            if (billingAddress.isPresent()) {
+                Address orderBillingAddress = billingAddress.get();
+                order.setBillingAddress(orderBillingAddress);
+            }
+
+            Optional<Address> shippingAddress = this.addressService.findById(cartDTO.getShippingAddressId());
+            if (shippingAddress.isPresent()) {
+                Address orderShippingAddress = shippingAddress.get();
+                order.setShippingAddress(orderShippingAddress);
+            }
 
             // Generate Order Number
             String orderNumber = generateOrderNumber(user);
@@ -104,6 +109,20 @@ public class OrderController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @GetMapping
+    public List<Order> findAll() {
+        return orderService.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public List<Order> getOrdersByUserId(@PathVariable Long id) {
+        Optional<User> user = userService.findById(id);
+        if (user.isPresent()) {
+            return orderService.findByUserId(user.get().getId());
+        }
+        return new ArrayList<>();
+    }
+
     private String generateOrderNumber(User user) {
         // Fetch the last order number for the user
         String lastOrderNumber = orderService.findLastOrderNumberByUser(user);
@@ -122,9 +141,7 @@ public class OrderController {
     /*@PutMapping("/{id}")
     public ResponseEntity<Order> updateOrder(@PathVariable Long id, @RequestBody Order orderDetails) {
         Order order = orderService.findById(id);
-
         if (order != null) {
-
             order.setUser(orderDetails.getUser());
             order.setTotalPriceHT(orderDetails.getTotalPriceHT());
             order.setTotalPriceTTC(orderDetails.getTotalPriceTTC());
@@ -133,7 +150,6 @@ public class OrderController {
             *//*order.setBillingAddress(orderDetails.getBillingAddress());
             order.setShippingAddress(orderDetails.getShippingAddress());*//*
             order.setOrderLines(orderDetails.getOrderLines());
-
             return new ResponseEntity<>(orderService.update(order), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -152,3 +168,6 @@ public class OrderController {
 
 
 }
+
+
+

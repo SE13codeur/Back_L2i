@@ -1,19 +1,20 @@
 package com.l2i_e_commerce.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Data
 @Entity
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(force = true)
 public class User {
 
     @Id
@@ -25,20 +26,15 @@ public class User {
     private Role role = new Role();
 
     private String firstname;
-
     private String lastname;
-
     @Column(unique = true)
     private String username;
-
     @Column(unique = true)
     private String email;
-
     private String password;
 
-    @JsonIgnoreProperties("users")
-    @ManyToMany(cascade = { CascadeType.MERGE, CascadeType.REFRESH })
-    private List<Address> addresses;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Address> addresses = new ArrayList<Address>();
 
     public User(@NonNull Role role, @NonNull String firstname, @NonNull String lastname,
                 @NonNull String email, @NonNull String password, @NonNull List<Address> addresses) {
@@ -49,5 +45,5 @@ public class User {
         this.password = password;
         this.addresses = addresses;
     }
-
 }
+
